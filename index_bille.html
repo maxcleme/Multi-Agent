@@ -40,10 +40,10 @@
                         <label>Quantity of ball :</label>
                     </td>
                     <td>
-                        <input id="quantity-value" type="number" min="1" max="9999" step="1" value="25">
+                        <input id="quantity-value" type="number" min="1" max="100" step="1" value="100">
                     </td>
                     <td>
-                        <input id="quantity" name="quantity" type="range" min="1" max="9999" value="25">
+                        <input id="quantity" name="quantity" type="range" min="1" max="100" value="25">
                     </td>
                 </tr>
 
@@ -52,10 +52,10 @@
                         <label>Size (Square) :</label>
                     </td>
                     <td>
-                        <input id="size-value" type="number" min="10" max="500" step="1" value="50">
+                        <input id="size-value" type="number" min="10" max="500" step="1" value=10>
                     </td>
                     <td>
-                        <input id="size" name="size" type="range" min="10" max="500" value="50">
+                        <input id="size" name="size" type="range" min="10" max="500" value="10" onchange="setMaxBalls()">
                     </td>
                 </tr>
                 <tr>
@@ -68,6 +68,14 @@
                         	<option value="SQUARE">&#9632; Square</option>
                         	<option value="CIRCLE">&#9679; Circle</option>
                         </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="grid">Display grid :</label>
+                    </td>
+                    <td colspan="2">
+                        <input id="grid" name="grid" type="checkbox" value="1" checked>
                     </td>
                 </tr>
                 <tr>
@@ -105,6 +113,11 @@
 
 <script>
 
+function setMaxBalls(){
+	console.log('trigger');
+	document.getElementById('quantity').attr('max', $('#size').val() * $('#size').val());
+}
+
     var environment;
     var renderer;
     var ballModel;
@@ -138,6 +151,7 @@
             mapConsole: false,
             torWorld: formValue['torWorld'],
             fairness: formValue['fairness'],
+            grid: formValue['grid'],
             statObject: statObject,
             renderer: renderer,
             actors: [

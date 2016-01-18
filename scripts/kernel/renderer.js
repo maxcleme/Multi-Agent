@@ -103,9 +103,9 @@ var Renderer = function(scale) {
 
 		switch (agent.shape) {
 		case 'CIRCLE':
-			var centerX = (agent.position.x * this.scale);
-			var centerY = (agent.position.y * this.scale);
-			var radius = this.scale;
+			var centerX = (agent.position.x * this.scale) + this.scale / 2;
+			var centerY = (agent.position.y * this.scale) + this.scale / 2;
+			var radius = this.scale / 2;
 
 			this.context.beginPath();
 			this.context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
@@ -127,11 +127,20 @@ var Renderer = function(scale) {
 	this.clean = function() {
 		this.context.clearRect(0, 0, this.environment.options.width
 				* this.scale, this.environment.options.height * this.scale);
-		this.context.fillStyle = "black";
+		this.context.fillStyle = "white";
 		this.context.fillRect(0, 0,
 				this.environment.options.width * this.scale,
 				this.environment.options.height * this.scale);
+		this.context.strokeRect(0, 0, this.environment.options.width * this.scale, this.environment.options.height * this.scale);
 
+		if ( this.environment.options.grid ){
+			for ( i = 0 ; i < this.environment.options.width ; i++ ){
+				for ( j = 0 ; j < this.environment.options.height ; j++ ){
+					this.context.strokeRect(i*this.scale, j*this.scale, this.scale, this.scale);
+				}
+			}
+		}
+		
 	};
 
 	/**
