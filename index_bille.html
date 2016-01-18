@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <script src="scripts/jquery.min.js"></script>
+    <script src="scripts/kernel/core.js"></script>
+    <script src="scripts/models/ball_model.js"></script>
+    <script src="scripts/kernel/renderer.js"></script>
+    <script src="scripts/conf/parameters.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style/style.css"/>
+
+<body>
+
+<div id="left-body">
+    <div id="content"></div>
+    <div id="other">
+        <div style="width:50%; height:100%">
+            <label id="stats"></label>
+        </div>
+        <form id="parameter-form">
+            <table>
+                <tr>
+                    <td>
+                        <label for="delay-value">Delay :</label>
+                    </td>
+                    <td>
+                        <input id="delay-value" type="number" min="1" max="1000" step="1" value="1">
+                        ms
+                    </td>
+                    <td>
+                        <input id="delay" name="delay" type="range" min="1" max="1000" value="1">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label>Quantity of ball :</label>
+                    </td>
+                    <td>
+                        <input id="quantity-value" type="number" min="1" max="9999" step="1" value="25">
+                    </td>
+                    <td>
+                        <input id="quantity" name="quantity" type="range" min="1" max="9999" value="25">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label>Size (Square) :</label>
+                    </td>
+                    <td>
+                        <input id="size-value" type="number" min="10" max="500" step="1" value="50">
+                    </td>
+                    <td>
+                        <input id="size" name="size" type="range" min="10" max="500" value="50">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="delay-value">Tor world :</label>
+                    </td>
+                    <td colspan="2">
+                        <input id="torWorld" name="torWorld" type="checkbox" value="1" checked>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="submit">
+                            <input type="submit" value="(Re)Start !">
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <div class="submit">
+                            <input type="button" id="pause-button" onclick="pause()" value="Pause" disabled>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    var environment;
+    var renderer;
+    var ballModel;
+    var statObject;
+    var formValue;
+    var interval = [];
+
+    var start = function (form) {
+
+        formValue = [];
+        $(form).serializeArray().forEach(function (element, index) {
+            formValue[element.name] = parseInt(element.value);
+        });
+
+        /** RENDERER **/
+        renderer = new Renderer();
+
+        /** WATOR MODEL **/
+        var ballOptions = {
+        };
+        ballModel = new BallModel(ballOptions);
+
+        var totalCell = formValue['size'] * formValue['size'];
+
+        /** ENVIRONMENT **/
+        statObject = new ballModel.statObject();
+        var environmentOptions = {
+            height: formValue['size'],
+            width: formValue['size'],
+            mapConsole: false,
+            torWorld: formValue['torWorld'],
+            statObject: statObject,
+            renderer: renderer,
+            actors: [
+                {type: ballModel.ball, count: formValue['quantity']}
+            ]
+        };
+        console.log(environmentOptions);
+        environment = new Environment(environmentOptions);
+
+        /** SET ENVIRONMENT TO WATOR MODEL AND RENDERER **/
+        ballModel.environment = environment;
+        renderer.environment = environment;
+
+        /** START ENVIRONMENT **/
+        environment.init();
+        environment.populate();
+
+        run();
+        $("#pause-button").val("Pause");
+        $("#pause-button").prop('disabled', false);
+    };
+
+    var pause = function () {
+        var pauseButton = $("#pause-button");
+        if (pauseButton.val() == "Play") {
+            run();
+            pauseButton.val("Pause");
+        } else {
+            // Delete previous intervals
+            while (interval.length > 0) {
+                window.clearInterval(interval.shift());
+            }
+            pauseButton.val("Play");
+        }
+    };
+
+    var run = function (form) {
+
+        var inter = window.setInterval(function () {
+            environment.update(pause);
+        }, formValue['delay']);
+        interval.push(inter);
+    }
+
+</script>
+
+</body>
+</html>
