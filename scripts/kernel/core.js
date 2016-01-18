@@ -25,6 +25,10 @@ var Environment = function (options) {
    * Initialize the map.
    */
   this.init = function () {
+	  console.log(this.options.fairnessSeed);
+	if (this.options.fairnessSeed) {
+		Math.seedrandom(this.options.fairnessSeed);	
+	}
     if (this.renderer) {
       if (options.enable3D == true) {
         this.renderer.init3D();

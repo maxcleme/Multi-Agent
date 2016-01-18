@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title></title>
 
+	<script src="scripts/seedrandom.min.js"></script>
+	
     <script src="scripts/jquery.min.js"></script>
     <script src="scripts/kernel/core.js"></script>
     <script src="scripts/models/ball_model.js"></script>
@@ -87,11 +89,14 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td>
                         <label for="fairness">Fairness :</label>
                     </td>
-                    <td colspan="2">
-                        <input id="fairness" name="fairness" type="checkbox" value="1" checked>
+					<td>
+                        <input id="fairness-seed" name="fairness-seed" type="text" placeholder="seed" style="width: 50px;">
+                    </td>
+                    <td>
+                        <input id="fairness" name="fairness" type="checkbox" value="1" checked onchange="displaySeedBox()">
                     </td>
                 </tr>
                 <tr>
@@ -114,9 +119,19 @@
 <script>
 
 function setMaxBalls(){
-	console.log('trigger');
 	document.getElementById('quantity').attr('max', $('#size').val() * $('#size').val());
 }
+
+function displaySeedBox() {
+console.log($('#fairness').is('checked'))
+	if ($('#fairness').attr('checked')) {
+		$('#fairness-seed').hide()
+	}
+	else {
+		$('#fairness-seed').show()
+	}
+}
+displaySeedBox();
 
     var environment;
     var renderer;
@@ -151,6 +166,7 @@ function setMaxBalls(){
             mapConsole: false,
             torWorld: formValue['torWorld'],
             fairness: formValue['fairness'],
+			fairnessSeed : $('#fairness-seed').val(),
             grid: formValue['grid'],
             statObject: statObject,
             renderer: renderer,
