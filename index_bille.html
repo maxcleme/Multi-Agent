@@ -59,11 +59,31 @@
                     </td>
                 </tr>
                 <tr>
+                    <td>
+                        <label>Balls shape :</label>
+                    </td>
+                    <td></td>
+                    <td>
+                        <select id="shape" name="shape">
+                        	<option value="SQUARE">&#9632; Square</option>
+                        	<option value="CIRCLE">&#9679; Circle</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
                     <td colspan="2">
-                        <label for="delay-value">Tor world :</label>
+                        <label for="torWorld">Tor world :</label>
                     </td>
                     <td colspan="2">
                         <input id="torWorld" name="torWorld" type="checkbox" value="1" checked>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="fairness">Fairness :</label>
+                    </td>
+                    <td colspan="2">
+                        <input id="fairness" name="fairness" type="checkbox" value="1" checked>
                     </td>
                 </tr>
                 <tr>
@@ -104,6 +124,7 @@
 
         /** WATOR MODEL **/
         var ballOptions = {
+        	shape : $('#shape').val()	
         };
         ballModel = new BallModel(ballOptions);
 
@@ -116,6 +137,7 @@
             width: formValue['size'],
             mapConsole: false,
             torWorld: formValue['torWorld'],
+            fairness: formValue['fairness'],
             statObject: statObject,
             renderer: renderer,
             actors: [

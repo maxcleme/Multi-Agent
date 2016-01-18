@@ -9,7 +9,7 @@ var BallModel = function (ballOptions) {
 
   /** FISH **/
   var Ball = this.ball = function () {
-    Agent.call(this, 'ball', 'red');
+    Agent.call(this, 'ball', 'red', ballOptions.shape);
     this.direction = directions[Math.floor(Math.random() * directions.length)];
   };
   Ball.prototype.doIt = function () {

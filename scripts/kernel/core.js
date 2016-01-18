@@ -172,7 +172,8 @@ var Environment = function (options) {
 
     this.change = false;
 
-    this.agents = shuffleArray(this.agents);
+    if ( this.options.fairness )
+    	this.agents = shuffleArray(this.agents);
 
     if (this.statObject) {
       this.statObject.reset();
@@ -486,9 +487,10 @@ var Environment = function (options) {
 
 };
 
-var Agent = function (type, color) {
+var Agent = function (type, color, shape) {
   this.type = type;
   this.color = color;
+  this.shape = shape || 'SQUARE';
 };
 Agent.prototype.doIt = function () {
 };
