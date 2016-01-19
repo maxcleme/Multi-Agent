@@ -35,7 +35,8 @@
 .text-center {
 	text-align: center;
 }
-#fairnessSeed-value{
+
+#fairnessSeed-value {
 	display: none;
 }
 </style>
@@ -59,8 +60,6 @@
 
 <link rel="stylesheet" type="text/css"
 	href="style/font-awesome-4.5.0/css/font-awesome.min.css" />
-	
-
 <body>
 
 	<div id="title" class="text-center">
@@ -68,17 +67,17 @@
 	</div>
 
 	<div class="col-lg-12  margin-top-50">
-		<div class="col-lg-4 col-lg-offset-2">
+		<div class="col-lg-4 col-lg-offset-2 ">
 			<form class="form-inline" role="form">
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="col-lg-3 margin-top-10">
 							<label>Delay</label>
 						</div>
-						<div class="col-lg-7 margin-top-10">
+						<div class="col-lg-6 margin-top-10">
 							<div class="sliders" id="delay"></div>
 						</div>
-						<div class="col-lg-2">
+						<div class="col-lg-3">
 							<input id="delay-value" class="form-control" type=text />
 						</div>
 					</div>
@@ -88,10 +87,10 @@
 						<div class="col-lg-3 margin-top-10">
 							<label>Quantity of ball</label>
 						</div>
-						<div class="col-lg-7 margin-top-10">
+						<div class="col-lg-6 margin-top-10">
 							<div class="sliders" id="quantity"></div>
 						</div>
-						<div class="col-lg-2">
+						<div class="col-lg-3">
 							<input id="quantity-value" class="form-control" type=text />
 						</div>
 					</div>
@@ -101,10 +100,10 @@
 						<div class="col-lg-3 margin-top-10">
 							<label>Size</label>
 						</div>
-						<div class="col-lg-7 margin-top-10">
+						<div class="col-lg-6 margin-top-10">
 							<div class="sliders" id="size"></div>
 						</div>
-						<div class="col-lg-2">
+						<div class="col-lg-3">
 							<input id="size-value" class="form-control" type=text />
 						</div>
 					</div>
@@ -162,7 +161,8 @@
 								onchange="displaySeedBox()" />
 						</div>
 						<div class="col-lg-5">
-							<input id="fairnessSeed-value" class="form-control" type=text placeholder="Enter your seed" />
+							<input id="fairnessSeed-value" class="form-control" type=text
+								placeholder="Enter your seed" />
 						</div>
 					</div>
 				</div>
@@ -239,7 +239,7 @@
 			});
 		}
 
-		initSlider("delay", 1, 999, 25, 0, "ms");
+		initSlider("delay", 1, 250, 25, 0, "ms");
 		initSlider("quantity", 1, 100, 25, 0, "");
 		initSlider("size", 10, 100, 25, 0, "");
 		$('#fairnessSeed-value').hide();
@@ -248,6 +248,20 @@
 		$('#fairness').bootstrapSwitch('state', true, true);
 		$('#displayGrid').bootstrapSwitch('state', true, true);
 		$('#fairnessSeed').bootstrapSwitch('state', true, true);
+
+		document.getElementById('delay').noUiSlider.on('update', function(
+				values, handle) {
+			console.log(+values[handle].replace('ms', ''));
+			if (environment) {
+				var inter = window.setInterval(function() {
+					environment.update(pause);
+				}, +values[handle].replace('ms', ''));
+				while (interval.length > 0) {
+					window.clearInterval(interval.shift());
+				}
+				interval.push(inter);
+			}
+		});
 
 		document.getElementById('size').noUiSlider.on('update', function(
 				values, handle) {
@@ -345,6 +359,9 @@
 			var inter = window.setInterval(function() {
 				environment.update(pause);
 			}, readParamater().delay);
+			while (interval.length > 0) {
+				window.clearInterval(interval.shift());
+			}
 			interval.push(inter);
 		}
 	</script>
