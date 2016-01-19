@@ -1,202 +1,320 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+<meta charset="UTF-8">
+<title></title>
 
-    <script src="scripts/jquery.min.js"></script>
-    <script src="scripts/kernel/core.js"></script>
-    <script src="scripts/models/ball_model.js"></script>
-    <script src="scripts/kernel/renderer.js"></script>
-    <script src="scripts/conf/parameters.js"></script>
+<script src="scripts/jquery-2.2.0.min.js"></script>
+<script src="scripts/wNumb.js"></script>
+<script src="scripts/kernel/core.js"></script>
+<script src="scripts/models/ball_model.js"></script>
+<script src="scripts/kernel/renderer.js"></script>
+<!-- <script src="scripts/conf/parameters.js"></script> -->
 
-    <link rel="stylesheet" type="text/css" href="style/style.css"/>
+<link rel="stylesheet" type="text/css" href="style/style.css" />
 
-<body>
-
-<div id="left-body">
-    <div id="content"></div>
-    <div id="other">
-        <div style="width:50%; height:100%">
-            <label id="stats"></label>
-        </div>
-        <form id="parameter-form">
-            <table>
-                <tr>
-                    <td>
-                        <label for="delay-value">Delay :</label>
-                    </td>
-                    <td>
-                        <input id="delay-value" type="number" min="1" max="1000" step="1" value="1">
-                        ms
-                    </td>
-                    <td>
-                        <input id="delay" name="delay" type="range" min="1" max="1000" value="1">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <label>Quantity of ball :</label>
-                    </td>
-                    <td>
-                        <input id="quantity-value" type="number" min="1" max="100" step="1" value="100">
-                    </td>
-                    <td>
-                        <input id="quantity" name="quantity" type="range" min="1" max="100" value="25">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <label>Size (Square) :</label>
-                    </td>
-                    <td>
-                        <input id="size-value" type="number" min="10" max="500" step="1" value=10>
-                    </td>
-                    <td>
-                        <input id="size" name="size" type="range" min="10" max="500" value="10" onchange="setMaxBalls()">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label>Balls shape :</label>
-                    </td>
-                    <td></td>
-                    <td>
-                        <select id="shape" name="shape">
-                        	<option value="SQUARE">&#9632; Square</option>
-                        	<option value="CIRCLE">&#9679; Circle</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <label for="grid">Display grid :</label>
-                    </td>
-                    <td colspan="2">
-                        <input id="grid" name="grid" type="checkbox" value="1" checked>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <label for="torWorld">Tor world :</label>
-                    </td>
-                    <td colspan="2">
-                        <input id="torWorld" name="torWorld" type="checkbox" value="1" checked>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <label for="fairness">Fairness :</label>
-                    </td>
-                    <td colspan="2">
-                        <input id="fairness" name="fairness" type="checkbox" value="1" checked>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="submit">
-                            <input type="submit" value="(Re)Start !">
-                        </div>
-                    </td>
-                    <td colspan="2">
-                        <div class="submit">
-                            <input type="button" id="pause-button" onclick="pause()" value="Pause" disabled>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
-</div>
-
-<script>
-
-function setMaxBalls(){
-	console.log('trigger');
-	document.getElementById('quantity').attr('max', $('#size').val() * $('#size').val());
+<style type="text/css">
+.form-inline .form-control {
+	width: 100% !important;
 }
 
-    var environment;
-    var renderer;
-    var ballModel;
-    var statObject;
-    var formValue;
-    var interval = [];
+.full-width {
+	width: 100%
+}
 
-    var start = function (form) {
+.margin-top-10 {
+	margin-top: 10px !important;
+}
 
-        formValue = [];
-        $(form).serializeArray().forEach(function (element, index) {
-            formValue[element.name] = parseInt(element.value);
-        });
+.margin-top-50 {
+	margin-top: 50px;
+}
 
-        /** RENDERER **/
-        renderer = new Renderer();
+.text-center {
+	text-align: center;
+}
+</style>
 
-        /** WATOR MODEL **/
-        var ballOptions = {
-        	shape : $('#shape').val()	
-        };
-        ballModel = new BallModel(ballOptions);
+<link rel="stylesheet" type="text/css"
+	href="style/nouislider/nouislider.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="style/nouislider/nouislider.pips.css" />
+<link rel="stylesheet" type="text/css"
+	href="style/nouislider/nouislider.tooltips.css" />
+<script src="style/nouislider/nouislider.js"></script>
 
-        var totalCell = formValue['size'] * formValue['size'];
+<link rel="stylesheet" type="text/css"
+	href="style/bootstrap-3.3.6-dist/css/bootstrap.min.css" />
+<script src="style/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
 
-        /** ENVIRONMENT **/
-        statObject = new ballModel.statObject();
-        var environmentOptions = {
-            height: formValue['size'],
-            width: formValue['size'],
-            mapConsole: false,
-            torWorld: formValue['torWorld'],
-            fairness: formValue['fairness'],
-            grid: formValue['grid'],
-            statObject: statObject,
-            renderer: renderer,
-            actors: [
-                {type: ballModel.ball, count: formValue['quantity']}
-            ]
-        };
-        console.log(environmentOptions);
-        environment = new Environment(environmentOptions);
+<link rel="stylesheet" type="text/css"
+	href="style/bootstrap-switch-master/css/bootstrap3/bootstrap-switch.min.css" />
+<script src="style/bootstrap-switch-master/js/bootstrap-switch.min.js"></script>
 
-        /** SET ENVIRONMENT TO WATOR MODEL AND RENDERER **/
-        ballModel.environment = environment;
-        renderer.environment = environment;
 
-        /** START ENVIRONMENT **/
-        environment.init();
-        environment.populate();
+<link rel="stylesheet" type="text/css"
+	href="style/font-awesome-4.5.0/css/font-awesome.min.css" />
+<body>
 
-        run();
-        $("#pause-button").val("Pause");
-        $("#pause-button").prop('disabled', false);
-    };
+	<div id="title" class="text-center">
+		<h1>IDL - Sytème Multi Agent</h1>
+	</div>
 
-    var pause = function () {
-        var pauseButton = $("#pause-button");
-        if (pauseButton.val() == "Play") {
-            run();
-            pauseButton.val("Pause");
-        } else {
-            // Delete previous intervals
-            while (interval.length > 0) {
-                window.clearInterval(interval.shift());
-            }
-            pauseButton.val("Play");
-        }
-    };
+	<div class="col-lg-12  margin-top-50">
+		<div class="col-lg-4 col-lg-offset-2">
+			<form class="form-inline" role="form">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Delay</label>
+						</div>
+						<div class="col-lg-7 margin-top-10">
+							<div class="sliders" id="delay"></div>
+						</div>
+						<div class="col-lg-2">
+							<input id="delay-value" class="form-control" type=text />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Quantity of ball</label>
+						</div>
+						<div class="col-lg-7 margin-top-10">
+							<div class="sliders" id="quantity"></div>
+						</div>
+						<div class="col-lg-2">
+							<input id="quantity-value" class="form-control" type=text />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Size</label>
+						</div>
+						<div class="col-lg-7 margin-top-10">
+							<div class="sliders" id="size"></div>
+						</div>
+						<div class="col-lg-2">
+							<input id="size-value" class="form-control" type=text />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Ball shape</label>
+						</div>
+						<div class="col-lg-9">
+							<select id="shape" name="shape" class="form-control">
+								<option value="SQUARE">&#9632; Square</option>
+								<option value="CIRCLE">&#9679; Circle</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Tor world</label>
+						</div>
+						<div class="col-lg-9">
+							<input id="torWorld" type="checkbox" data-size="medium" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Fairness</label>
+						</div>
+						<div class="col-lg-9">
+							<input id="fairness" type="checkbox" data-size="medium" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Display grid</label>
+						</div>
+						<div class="col-lg-9">
+							<input id="displayGrid" type="checkbox" data-size="medium" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12 margin-top-50">
+						<div class="text-center">
+							<button id="play-btn" type="button"
+								class="btn btn-default btn-lg" onclick="start()">
+								<i class="fa fa-play-circle-o fa-5x"></i>
+							</button>
+							<button id="pause-btn" type="button"
+								class="btn btn-default btn-lg" disabled onclick="pause()">
+								<i class="fa fa-pause-circle-o fa-5x"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
 
-    var run = function (form) {
+		<div class="col-lg-4">
+			<div id="content"></div>
+		</div>
+	</div>
 
-        var inter = window.setInterval(function () {
-            environment.update(pause);
-        }, formValue['delay']);
-        interval.push(inter);
-    }
+	<script>
+		function readParamater() {
+			return {
+				delay : +document.getElementById('delay').noUiSlider.get()
+						.replace('ms', ''),
+				size : +document.getElementById('size').noUiSlider.get(),
+				quantity : +document.getElementById('quantity').noUiSlider
+						.get(),
+				torWorld : $('#torWorld').is(':checked'),
+				fairness : $('#fairness').is(':checked'),
+				displayGrid : $('#displayGrid').is(':checked'),
+				ballShape : $('#shape').val()
+			};
+		}
 
-</script>
+		function initSlider(id, min, max, defaultValue, nbDecimal, unit) {
+			var slider = document.getElementById(id);
+			var input = document.getElementById(id + "-value");
+
+			noUiSlider.create(slider, {
+				start : defaultValue,
+				connect : 'lower',
+				range : {
+					'min' : min,
+					'max' : max
+				},
+				format : wNumb({
+					decimals : nbDecimal,
+					thousand : ' ',
+					postfix : unit,
+				})
+			});
+
+			slider.noUiSlider.on('update', function(values, handle) {
+				input.value = values[handle];
+			});
+
+			input.addEventListener('change', function() {
+				slider.noUiSlider.set(this.value);
+			});
+		}
+
+		initSlider("delay", 1, 999, 25, 0, "ms");
+		initSlider("quantity", 1, 100, 25, 0, "");
+		initSlider("size", 10, 100, 25, 0, "");
+
+		$('#torWorld').bootstrapSwitch('state', true, true);
+		$('#fairness').bootstrapSwitch('state', true, true);
+		$('#displayGrid').bootstrapSwitch('state', true, true);
+
+		document.getElementById('size').noUiSlider.on('update', function(
+				values, handle) {
+			document.getElementById('quantity').noUiSlider.updateOptions({
+				range : {
+					'min' : 1,
+					'max' : values[handle] * values[handle]
+				}
+			});
+		});
+
+		document.getElementById("size-value").addEventListener(
+				'change',
+				function() {
+					document.getElementById('quantity').noUiSlider
+							.updateOptions({
+								range : {
+									'min' : 1,
+									'max' : this.value * this.value
+								}
+							});
+				});
+
+		var environment;
+		var renderer;
+		var ballModel;
+		var statObject;
+		var formValue;
+		var interval = [];
+
+		var start = function() {
+
+			var formValue = readParamater();
+
+			/** RENDERER **/
+			renderer = new Renderer();
+
+			/** WATOR MODEL **/
+			var ballOptions = {
+				shape : formValue.ballShape
+			};
+			ballModel = new BallModel(ballOptions);
+
+			var totalCell = formValue.size * formValue.size;
+
+			/** ENVIRONMENT **/
+			statObject = new ballModel.statObject();
+			var environmentOptions = {
+				height : formValue.size,
+				width : formValue.size,
+				mapConsole : false,
+				torWorld : formValue.torWorld,
+				fairness : formValue.fairness,
+				grid : formValue.displayGrid,
+				statObject : statObject,
+				renderer : renderer,
+				actors : [ {
+					type : ballModel.ball,
+					count : formValue.quantity
+				} ]
+			};
+			console.log(environmentOptions);
+			environment = new Environment(environmentOptions);
+
+			/** SET ENVIRONMENT TO WATOR MODEL AND RENDERER **/
+			ballModel.environment = environment;
+			renderer.environment = environment;
+
+			/** START ENVIRONMENT **/
+			environment.init();
+			environment.populate();
+
+			run();
+			$("#pause-btn").val("Pause");
+			$("#pause-btn").prop('disabled', false);
+		};
+
+		var pause = function() {
+			var pauseButton = $("#pause-btn");
+			if (pauseButton.val() == "Play") {
+				run();
+				pauseButton.val("Pause");
+			} else {
+				// Delete previous intervals
+				while (interval.length > 0) {
+					window.clearInterval(interval.shift());
+				}
+				pauseButton.val("Play");
+			}
+		};
+
+		var run = function(form) {
+
+			var inter = window.setInterval(function() {
+				environment.update(pause);
+			}, readParamater().delay);
+			interval.push(inter);
+		}
+	</script>
 
 </body>
 </html>
