@@ -51,7 +51,8 @@ var BallModel = function(ballOptions) {
         if (nextP !== undefined) {
             var cell = that.environment.getAgent(nextP.x, nextP.y);
             if (cell !== undefined && cell instanceof Ball) {
-                this.direction = [this.direction[0] * (-1), this.direction[1] * (-1)];
+            	this.direction = [this.direction[0] * (-1), this.direction[1] * (-1)];
+            	cell.direction = [cell.direction[0] * (-1), cell.direction[1] * (-1)];
             } else {
                 that.environment.moveAgent(this, nextP.x, nextP.y);
             }
