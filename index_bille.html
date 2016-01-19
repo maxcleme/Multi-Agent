@@ -6,10 +6,12 @@
 
 <script src="scripts/jquery-2.2.0.min.js"></script>
 <script src="scripts/wNumb.js"></script>
-<script src="scripts/kernel/core.js"></script>
-<script src="scripts/models/ball_model.js"></script>
+<script src="scripts/seedrandom.min.js"></script>
+
 <script src="scripts/kernel/renderer.js"></script>
-<!-- <script src="scripts/conf/parameters.js"></script> -->
+<script src="scripts/kernel/core.js"></script>
+
+<script src="scripts/models/ball_model.js"></script>
 
 <link rel="stylesheet" type="text/css" href="style/style.css" />
 
@@ -33,6 +35,9 @@
 .text-center {
 	text-align: center;
 }
+#fairnessSeed-value{
+	display: none;
+}
 </style>
 
 <link rel="stylesheet" type="text/css"
@@ -54,6 +59,8 @@
 
 <link rel="stylesheet" type="text/css"
 	href="style/font-awesome-4.5.0/css/font-awesome.min.css" />
+	
+
 <body>
 
 	<div id="title" class="text-center">
@@ -128,6 +135,16 @@
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="col-lg-3 margin-top-10">
+							<label>Display grid</label>
+						</div>
+						<div class="col-lg-9">
+							<input id="displayGrid" type="checkbox" data-size="medium" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
 							<label>Fairness</label>
 						</div>
 						<div class="col-lg-9">
@@ -138,10 +155,14 @@
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="col-lg-3 margin-top-10">
-							<label>Display grid</label>
+							<label>Fairness seed</label>
 						</div>
-						<div class="col-lg-9">
-							<input id="displayGrid" type="checkbox" data-size="medium" />
+						<div class="col-lg-4">
+							<input id="fairnessSeed" type="checkbox" data-size="medium"
+								onchange="displaySeedBox()" />
+						</div>
+						<div class="col-lg-5">
+							<input id="fairnessSeed-value" class="form-control" type=text placeholder="Enter your seed" />
 						</div>
 					</div>
 				</div>
@@ -168,6 +189,14 @@
 	</div>
 
 	<script>
+		function displaySeedBox() {
+			if ($('#fairnessSeed').is(':checked')) {
+				$('#fairnessSeed-value').hide();
+			} else {
+				$('#fairnessSeed-value').show();
+			}
+		}
+
 		function readParamater() {
 			return {
 				delay : +document.getElementById('delay').noUiSlider.get()
@@ -177,6 +206,7 @@
 						.get(),
 				torWorld : $('#torWorld').is(':checked'),
 				fairness : $('#fairness').is(':checked'),
+				fairnessSeed : $('#fairnessSeed-value').val(),
 				displayGrid : $('#displayGrid').is(':checked'),
 				ballShape : $('#shape').val()
 			};
@@ -212,10 +242,12 @@
 		initSlider("delay", 1, 999, 25, 0, "ms");
 		initSlider("quantity", 1, 100, 25, 0, "");
 		initSlider("size", 10, 100, 25, 0, "");
+		$('#fairnessSeed-value').hide();
 
 		$('#torWorld').bootstrapSwitch('state', true, true);
 		$('#fairness').bootstrapSwitch('state', true, true);
 		$('#displayGrid').bootstrapSwitch('state', true, true);
+		$('#fairnessSeed').bootstrapSwitch('state', true, true);
 
 		document.getElementById('size').noUiSlider.on('update', function(
 				values, handle) {
@@ -269,6 +301,7 @@
 				mapConsole : false,
 				torWorld : formValue.torWorld,
 				fairness : formValue.fairness,
+				fairnessSeed : formValue.fairnessSeed,
 				grid : formValue.displayGrid,
 				statObject : statObject,
 				renderer : renderer,
