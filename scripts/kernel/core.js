@@ -25,7 +25,6 @@ var Environment = function (options) {
    * Initialize the map.
    */
   this.init = function () {
-	  console.log(this.options.fairnessSeed);
 	if (this.options.fairnessSeed) {
 		Math.seedrandom(this.options.fairnessSeed);	
 	}
@@ -66,7 +65,7 @@ var Environment = function (options) {
       var randomRow = Math.floor((Math.random() * this.options.height));
       var randomCol = Math.floor((Math.random() * this.options.width));
 
-      if (!this.population[randomRow][randomCol]) {
+      if (this.population[randomRow][randomCol] == undefined) {
 
         // Get the agent to create
         var Agent = actors[0].type;
@@ -477,16 +476,18 @@ var Environment = function (options) {
    */
   var displayGrid = function (grid, toDisplay) {
     var map = "";
+	var qty = 0;
     for (var x = 0; x < grid.length; x++) {
       for (var y = 0; y < grid[x].length; y++) {
         var element = grid[x][grid.length - y - 1];
         map += '[';
         map += toDisplay(element);
         map += ']';
+		if (toDisplay(element) != ' ') qty ++;
       }
       map += '\n';
     }
-    console.log(map);
+    console.log(map,qty);
   };
 
 };
