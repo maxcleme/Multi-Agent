@@ -1,6 +1,3 @@
-/**
- * Created by Quentin on 14/01/2015.
- */
 var BallModel = function(ballOptions) {
 
     var that = this;

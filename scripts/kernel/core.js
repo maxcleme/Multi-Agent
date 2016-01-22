@@ -1,6 +1,3 @@
-/**
- * Created by Quentin on 14/01/2015.
- */
 var Environment = function (options) {
 
   // Check options

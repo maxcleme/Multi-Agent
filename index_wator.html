@@ -11,7 +11,7 @@
 <script src="scripts/kernel/renderer.js"></script>
 <script src="scripts/kernel/core.js"></script>
 
-<script src="scripts/models/ball_model.js"></script>
+<script src="scripts/models/wator_model.js"></script>
 
 <link rel="stylesheet" type="text/css" href="style/style.css" />
 
@@ -85,13 +85,39 @@
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="col-lg-3 margin-top-10">
-							<label>Balls</label>
+							<label>Agent</label>
 						</div>
 						<div class="col-lg-6 margin-top-10">
 							<div class="sliders" id="quantity"></div>
 						</div>
 						<div class="col-lg-3">
 							<input id="quantity-value" class="form-control" type=text />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Fishes</label>
+						</div>
+						<div class="col-lg-6 margin-top-10">
+							<div class="sliders" id="fishes"></div>
+						</div>
+						<div class="col-lg-3">
+							<input id="fishes-value" class="form-control" type=text />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Sharks</label>
+						</div>
+						<div class="col-lg-6 margin-top-10">
+							<div class="sliders" id="sharks"></div>
+						</div>
+						<div class="col-lg-3">
+							<input id="sharks-value" class="form-control" type=text />
 						</div>
 					</div>
 				</div>
@@ -105,19 +131,6 @@
 						</div>
 						<div class="col-lg-3">
 							<input id="size-value" class="form-control" type=text />
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="col-lg-3 margin-top-10">
-							<label>Ball shape</label>
-						</div>
-						<div class="col-lg-9">
-							<select id="shape" name="shape" class="form-control">
-								<option value="SQUARE">&#9632; Square</option>
-								<option value="CIRCLE">&#9679; Circle</option>
-							</select>
 						</div>
 					</div>
 				</div>
@@ -184,7 +197,9 @@
 		</div>
 
 		<div class="col-lg-4">
-			<h4>Count : <span id="count">0</span></h4>
+			<h4>
+				Count : <span id="count">0</span>
+			</h4>
 			<div id="content"></div>
 		</div>
 	</div>
@@ -205,11 +220,14 @@
 				size : +document.getElementById('size').noUiSlider.get(),
 				quantity : +document.getElementById('quantity').noUiSlider
 						.get(),
+				fishes : +document.getElementById('fishes').noUiSlider.get()
+						.replace('%', ''),
+				sharks : +document.getElementById('sharks').noUiSlider.get()
+						.replace('%', ''),
 				torWorld : $('#torWorld').is(':checked'),
 				fairness : $('#fairness').is(':checked'),
 				fairnessSeed : $('#fairnessSeed-value').val(),
 				displayGrid : $('#displayGrid').is(':checked'),
-				ballShape : $('#shape').val()
 			};
 		}
 
@@ -240,7 +258,9 @@
 		}
 
 		initSlider("delay", 1, 250, 25, 0, "ms");
-		initSlider("quantity", 1, 100, 25, 0, "");
+		initSlider("quantity", 1, 100, 100, 0, "");
+		initSlider("fishes", 0, 100, 50, 0, "%");
+		initSlider("sharks", 0, 100, 50, 0, "%");
 		initSlider("size", 10, 100, 25, 0, "");
 		$('#fairnessSeed-value').hide();
 
@@ -249,20 +269,26 @@
 		$('#displayGrid').bootstrapSwitch('state', true, true);
 		$('#fairnessSeed').bootstrapSwitch('state', true, true);
 
-		document.getElementById('delay').noUiSlider.on('update', function(
-				values, handle) {
-			console.log(+values[handle].replace('ms', ''));
-			if (environment) {
-				var inter = window.setInterval(function() {
-					environment.update(pause);
-					document.getElementById("count").innerHTML = environment.roundCount;
-				}, +values[handle].replace('ms', ''));
-				while (interval.length > 0) {
-					window.clearInterval(interval.shift());
-				}
-				interval.push(inter);
-			}
-		});
+		document.getElementById('delay').noUiSlider
+				.on(
+						'update',
+						function(values, handle) {
+							console.log(+values[handle].replace('ms', ''));
+							if (environment) {
+								var inter = window
+										.setInterval(
+												function() {
+													environment.update(pause);
+													document
+															.getElementById("count").innerHTML = environment.roundCount;
+												}, +values[handle].replace(
+														'ms', ''));
+								while (interval.length > 0) {
+									window.clearInterval(interval.shift());
+								}
+								interval.push(inter);
+							}
+						});
 
 		document.getElementById('size').noUiSlider.on('update', function(
 				values, handle) {
@@ -286,9 +312,20 @@
 							});
 				});
 
+		document.getElementById('sharks').noUiSlider.on('change', function(
+				values, handle) {
+			document.getElementById('fishes').noUiSlider
+					.set(100 - values[handle].replace('%', ''));
+		});
+		document.getElementById('fishes').noUiSlider.on('change', function(
+				values, handle) {
+			document.getElementById('sharks').noUiSlider
+					.set(100 - values[handle].replace('%', ''));
+		});
+
 		var environment;
 		var renderer;
-		var ballModel;
+		var watorModel;
 		var statObject;
 		var formValue;
 		var interval = [];
@@ -300,16 +337,20 @@
 			/** RENDERER **/
 			renderer = new Renderer();
 
-			/** BALL MODEL **/
-			var ballOptions = {
-				shape : formValue.ballShape
+			/** WATOR MODEL **/
+			var fishesOptions = {
+				breedCount : 3,
 			};
-			ballModel = new BallModel(ballOptions);
+			var sharksOptions = {
+				breedCount : 5,
+				minimumEatCount : 3,
+			};
+			watorModel = new WatorModel(fishesOptions, sharksOptions);
 
 			var totalCell = formValue.size * formValue.size;
 
 			/** ENVIRONMENT **/
-			statObject = new ballModel.statObject();
+			statObject = new watorModel.statObject();
 			var environmentOptions = {
 				height : formValue.size,
 				width : formValue.size,
@@ -320,16 +361,23 @@
 				grid : formValue.displayGrid,
 				statObject : statObject,
 				renderer : renderer,
-				actors : [ {
-					type : ballModel.ball,
-					count : formValue.quantity
-				} ]
+				actors : [
+						{
+							type : watorModel.fish,
+							count : Math.round(formValue.quantity
+									* (formValue.fishes / 100))
+						},
+						{
+							type : watorModel.shark,
+							count : Math.round(formValue.quantity
+									* (formValue.sharks / 100))
+						} ]
 			};
 			console.log(environmentOptions);
 			environment = new Environment(environmentOptions);
 
 			/** SET ENVIRONMENT TO WATOR MODEL AND RENDERER **/
-			ballModel.environment = environment;
+			watorModel.environment = environment;
 			renderer.environment = environment;
 
 			/** START ENVIRONMENT **/
@@ -357,10 +405,12 @@
 
 		var run = function(form) {
 
-			var inter = window.setInterval(function() {
-				environment.update(pause);
-				document.getElementById("count").innerHTML = environment.roundCount;
-			}, readParamater().delay);
+			var inter = window
+					.setInterval(
+							function() {
+								environment.update(pause);
+								document.getElementById("count").innerHTML = environment.roundCount;
+							}, readParamater().delay);
 			while (interval.length > 0) {
 				window.clearInterval(interval.shift());
 			}
