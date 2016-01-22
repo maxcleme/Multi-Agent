@@ -184,6 +184,7 @@
 		</div>
 
 		<div class="col-lg-4">
+			<h4>Count : <span id="count">0</span></h4>
 			<div id="content"></div>
 		</div>
 	</div>
@@ -225,7 +226,6 @@
 				},
 				format : wNumb({
 					decimals : nbDecimal,
-					thousand : ' ',
 					postfix : unit,
 				})
 			});
@@ -255,6 +255,7 @@
 			if (environment) {
 				var inter = window.setInterval(function() {
 					environment.update(pause);
+					document.getElementById("count").innerHTML = environment.roundCount;
 				}, +values[handle].replace('ms', ''));
 				while (interval.length > 0) {
 					window.clearInterval(interval.shift());
@@ -358,6 +359,7 @@
 
 			var inter = window.setInterval(function() {
 				environment.update(pause);
+				document.getElementById("count").innerHTML = environment.roundCount;
 			}, readParamater().delay);
 			while (interval.length > 0) {
 				window.clearInterval(interval.shift());
