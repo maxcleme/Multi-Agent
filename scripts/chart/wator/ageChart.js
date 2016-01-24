@@ -53,9 +53,11 @@ AgeChart = function () {
     },
 
     series: [{
-      name: 'Shark'
+      name: 'Shark',
+      color: '#000000'
     }, {
-      name: 'Fish'
+      name: 'Fish',
+      color : '#1E90FF'
     }]
   });
   $ageChart = $ageChart.highcharts();

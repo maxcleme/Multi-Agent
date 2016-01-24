@@ -27,7 +27,7 @@ CurveChart = function () {
       marginRight: 10
     },
     title: {
-      text: 'Shark and Tuna by Time'
+      text: 'Shark and Fish by Time'
     },
     xAxis: {
       type: 'datetime',
@@ -56,7 +56,7 @@ CurveChart = function () {
     exporting: {
       enabled: false
     },
-    series: [{id: 'shark', name: 'shark', data: initData()}, {id: 'fish', name: 'fish', data: initData()}]
+    series: [{id: 'shark', name: 'shark', data: initData(), color: '#000000'}, {id: 'fish', name: 'fish', data: initData(), color: '#1E90FF'}]
   });
 
   $curveChart = $curveChart.highcharts();

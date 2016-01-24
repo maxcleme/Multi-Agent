@@ -4,7 +4,7 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 
 	/** BALL * */
 	var Fish = this.fish = function() {
-		Agent.call(this, 'fish', 'blue');
+		Agent.call(this, 'fish', 'DodgerBlue');
 		this.age = 0;
 	};
 	var Shark = this.shark = function() {
