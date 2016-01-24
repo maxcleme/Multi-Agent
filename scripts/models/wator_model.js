@@ -26,7 +26,7 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 		this.age++;
 
 		var nextPos = this.nextPosition();
-		if ( nextPos === undefined ){
+		if (nextPos === undefined) {
 			return;
 		}
 		var cell = that.environment.getAgent(nextPos.x, nextPos.y);
@@ -63,23 +63,46 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 			that.environment.moveAgent(this, nextPos.x, nextPos.y);
 			if (this.age % sharksOptions.breedCount === 0) {
 				randomPos = that.environment.randomFree(this);
-				that.environment.addAgent(new Shark(), randomPos.x, randomPos.y);
+				that.environment
+						.addAgent(new Shark(), randomPos.x, randomPos.y);
 			}
 		}
 		this.lastFishCount++;
 
 	};
 
-	/** STATS * */
+	/** STATS **/
 	this.statObject = function() {
 
 		this.reset = function() {
+			this.sharkCount = 0;
+			this.fishCount = 0;
+			this.nbSharkPerAge = [];
+			this.nbFishPerAge = [];
+			this.maxAge = 0;
 		};
 
 		this.reset();
 
 		this.statsFunction = function(agent) {
-
+			var table;
+			if (agent instanceof Shark) {
+				this.sharkCount++;
+				table = this.nbSharkPerAge;
+			} else if (agent instanceof Fish) {
+				this.fishCount++;
+				table = this.nbFishPerAge;
+			}
+			if (table != undefined) {
+				if (table[agent.age] == undefined) {
+					table[agent.age] = 1;
+				} else {
+					table[agent.age]++;
+				}
+				if (agent.age > this.maxAge) {
+					this.maxAge = agent.age;
+				}
+			}
 		};
 
 		this.callback = function() {
