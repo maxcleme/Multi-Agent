@@ -69,6 +69,7 @@
 	<div class="col-lg-12  margin-top-50">
 		<div class="col-lg-4 col-lg-offset-2 ">
 			<form class="form-inline" role="form">
+			
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="col-lg-3 margin-top-10">
@@ -118,6 +119,45 @@
 						</div>
 						<div class="col-lg-3">
 							<input id="sharks-value" class="form-control" type=text />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Fish breed</label>
+						</div>
+						<div class="col-lg-6 margin-top-10">
+							<div class="sliders" id="fish-breed"></div>
+						</div>
+						<div class="col-lg-3">
+							<input id="fish-breed-value" class="form-control" type=text />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Shark breed</label>
+						</div>
+						<div class="col-lg-6 margin-top-10">
+							<div class="sliders" id="shark-breed"></div>
+						</div>
+						<div class="col-lg-3">
+							<input id="shark-breed-value" class="form-control" type=text />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Starving time</label>
+						</div>
+						<div class="col-lg-6 margin-top-10">
+							<div class="sliders" id="starving"></div>
+						</div>
+						<div class="col-lg-3">
+							<input id="starving-value" class="form-control" type=text />
 						</div>
 					</div>
 				</div>
@@ -193,6 +233,7 @@
 						</div>
 					</div>
 				</div>
+				
 			</form>
 		</div>
 
@@ -224,6 +265,9 @@
 						.replace('%', ''),
 				sharks : +document.getElementById('sharks').noUiSlider.get()
 						.replace('%', ''),
+				fish_breed : +document.getElementById('fish-breed').noUiSlider.get(),
+				shark_breed : +document.getElementById('shark-breed').noUiSlider.get(),		
+				starving : +document.getElementById('starving').noUiSlider.get(),
 				torWorld : $('#torWorld').is(':checked'),
 				fairness : $('#fairness').is(':checked'),
 				fairnessSeed : $('#fairnessSeed-value').val(),
@@ -258,10 +302,13 @@
 		}
 
 		initSlider("delay", 1, 250, 25, 0, "ms");
-		initSlider("quantity", 1, 100, 100, 0, "");
-		initSlider("fishes", 0, 100, 50, 0, "%");
-		initSlider("sharks", 0, 100, 50, 0, "%");
-		initSlider("size", 10, 100, 25, 0, "");
+		initSlider("quantity", 1, 2500, 1000, 0, "");
+		initSlider("fishes", 0, 100, 75, 0, "%");
+		initSlider("sharks", 0, 100, 25, 0, "%");
+		initSlider("fish-breed", 1, 10, 3, 0, "");
+		initSlider("shark-breed", 1, 10, 5, 0, "");
+		initSlider("starving", 1, 10, 3, 0, "");
+		initSlider("size", 10, 100, 50, 0, "");
 		$('#fairnessSeed-value').hide();
 
 		$('#torWorld').bootstrapSwitch('state', true, true);
@@ -339,11 +386,11 @@
 
 			/** WATOR MODEL **/
 			var fishesOptions = {
-				breedCount : 3,
+				breedCount : formValue.fish_breed,
 			};
 			var sharksOptions = {
-				breedCount : 5,
-				minimumEatCount : 3,
+				breedCount : formValue.shark_breed,
+				minimumEatCount : formValue.starving,
 			};
 			watorModel = new WatorModel(fishesOptions, sharksOptions);
 

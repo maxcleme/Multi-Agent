@@ -25,8 +25,6 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 		var nbProcessed = 0;
 		this.age++;
 
-		var old_x = this.position.x;
-		var old_y = this.position.y;
 		var nextPos = this.nextPosition();
 		if ( nextPos === undefined ){
 			return;
@@ -35,7 +33,8 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 		if (!(cell instanceof Shark) && !(cell instanceof Fish)) {
 			that.environment.moveAgent(this, nextPos.x, nextPos.y);
 			if (this.age % fishesOptions.breedCount === 0) {
-				that.environment.addAgent(new Fish(), old_x, old_x);
+				randomPos = that.environment.randomFree(this);
+				that.environment.addAgent(new Fish(), randomPos.x, randomPos.y);
 			}
 		}
 
@@ -51,8 +50,6 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 			return;
 		}
 
-		var old_x = this.position.x;
-		var old_y = this.position.y;
 		var nextPos = this.nextPosition();
 		if (nextPos !== undefined) {
 			var cell = that.environment.getAgent(nextPos.x, nextPos.y);
@@ -65,7 +62,8 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 			}
 			that.environment.moveAgent(this, nextPos.x, nextPos.y);
 			if (this.age % sharksOptions.breedCount === 0) {
-				that.environment.addAgent(new Shark(), old_x, old_x);
+				randomPos = that.environment.randomFree(this);
+				that.environment.addAgent(new Shark(), randomPos.x, randomPos.y);
 			}
 		}
 		this.lastFishCount++;
