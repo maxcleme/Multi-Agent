@@ -1,5 +1,16 @@
 var WatorModel = function(fishesOptions, sharksOptions) {
 
+	var directions = [
+			[0, 1],
+			[0, -1],
+			[1, 0],
+			[-1, 0],
+			[1, 1],
+			[-1, -1],
+			[-1, 1],
+			[1, -1]
+	];
+
 	var that = this;
 
 	/** BALL * */
@@ -21,53 +32,59 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 	}
 
 	Fish.prototype.doIt = function() {
-		var nextP;
-		var nbProcessed = 0;
 		this.age++;
 
-		var nextPos = this.nextPosition();
-		if (nextPos === undefined) {
-			return;
-		}
-		var cell = that.environment.getAgent(nextPos.x, nextPos.y);
-		if (!(cell instanceof Shark) && !(cell instanceof Fish)) {
-			that.environment.moveAgent(this, nextPos.x, nextPos.y);
-			if (this.age % fishesOptions.breedCount === 0) {
-				randomPos = that.environment.randomFree(this);
-				that.environment.addAgent(new Fish(), randomPos.x, randomPos.y);
+
+		shuffleArray(directions);
+		for ( i = 0 ; i < directions.length ; i++ ){
+			var nextPos = that.environment.getPosition(this.position.x + directions[i][0], this.position.y + directions[i][1]);
+			if ( nextPos === undefined )
+				continue
+			var cell = that.environment.getAgent(nextPos.x, nextPos.y);
+			if (!(cell instanceof Shark) && !(cell instanceof Fish)) {
+				old_x = this.position.x;
+				old_y = this.position.y;
+				that.environment.moveAgent(this, nextPos.x, nextPos.y);
+				if (this.age % fishesOptions.breedCount === 0) {
+					//randomPos = that.environment.randomFree(this);
+					that.environment.addAgent(new Fish(), old_x, old_y);
+				}
+				break;
 			}
 		}
 
 	};
 
 	Shark.prototype.doIt = function() {
-		var nextP;
-		var nbProcessed = 0;
 		this.age++;
+		this.lastFishCount++;
 
 		if (this.lastFishCount === sharksOptions.minimumEatCount) {
 			that.environment.removeAgent(this);
 			return;
 		}
 
-		var nextPos = this.nextPosition();
-		if (nextPos !== undefined) {
+		shuffleArray(directions);
+		for ( i = 0 ; i < directions.length ; i++ ){
+			var nextPos = that.environment.getPosition(this.position.x + directions[i][0], this.position.y + directions[i][1]);
+			if ( nextPos === undefined )
+				continue
 			var cell = that.environment.getAgent(nextPos.x, nextPos.y);
-			if (cell instanceof Shark) {
-				return;
-			}
 			if (cell instanceof Fish) {
 				that.environment.removeAgent(cell);
 				this.lastFishCount = 0;
 			}
-			that.environment.moveAgent(this, nextPos.x, nextPos.y);
-			if (this.age % sharksOptions.breedCount === 0) {
-				randomPos = that.environment.randomFree(this);
-				that.environment
-						.addAgent(new Shark(), randomPos.x, randomPos.y);
+			if (!(cell instanceof Shark)){
+				old_x = this.position.x ;
+				old_y = this.position.y ;
+				that.environment.moveAgent(this, nextPos.x, nextPos.y);
+				if (this.age % sharksOptions.breedCount === 0) {
+					that.environment.addAgent(new Shark(), old_x, old_y	);
+				}
 			}
 		}
-		this.lastFishCount++;
+
+
 
 	};
 

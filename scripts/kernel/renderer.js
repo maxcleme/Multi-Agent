@@ -131,13 +131,19 @@ var Renderer = function(scale) {
 		this.context.strokeRect(0, 0, this.environment.options.width * this.scale, this.environment.options.height * this.scale);
 
 		if ( this.environment.options.grid ){
-			for ( i = 0 ; i < this.environment.options.width ; i++ ){
-				for ( j = 0 ; j < this.environment.options.height ; j++ ){
-					this.context.strokeRect(i*this.scale, j*this.scale, this.scale, this.scale);
-				}
+			for ( i = 1 ; i < this.environment.options.width ; i++ ){
+					this.context.beginPath();
+					this.context.moveTo(0, i*this.scale);
+					this.context.lineTo(this.environment.options.width * this.scale, i*this.scale );
+					this.context.stroke();
+
+					this.context.beginPath();
+					this.context.moveTo(i*this.scale, 0);
+					this.context.lineTo(i*this.scale, this.environment.options.height * this.scale);
+					this.context.stroke();
 			}
 		}
-		
+
 	};
 
 	/**

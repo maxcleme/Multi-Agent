@@ -313,20 +313,27 @@
 	    });
 	}
 
+
+
 	initSlider("delay", 1, 250, 25, 0, "ms");
 	initSlider("quantity", 1, 2500, 1000, 0, "");
-	initSlider("fishes", 0, 100, 75, 0, "%");
-	initSlider("sharks", 0, 100, 25, 0, "%");
-	initSlider("fish-breed", 1, 10, 3, 0, "");
-	initSlider("shark-breed", 1, 10, 5, 0, "");
-	initSlider("starving", 1, 10, 3, 0, "");
+	initSlider("fishes", 0, 100, 66, 0, "%");
+	initSlider("sharks", 0, 100, 34, 0, "%");
+	initSlider("fish-breed", 1, 15, 3, 0, "");
+	initSlider("shark-breed", 1, 15, 12, 0, "");
+	initSlider("starving", 1, 15, 5, 0, "");
 	initSlider("size", 10, 100, 50, 0, "");
 	$('#fairnessSeed-value').hide();
 
 	$('#torWorld').bootstrapSwitch('state', true, true);
 	$('#fairness').bootstrapSwitch('state', true, true);
-	$('#displayGrid').bootstrapSwitch('state', true, true);
+	$('#displayGrid').bootstrapSwitch('state', false, true);
 	$('#fairnessSeed').bootstrapSwitch('state', true, true);
+
+	$('#displayGrid').on('switchChange.bootstrapSwitch', function(event, state) {
+  	if ( renderer )
+			renderer.environment.options.grid = state;
+	});
 
 	document.getElementById('delay').noUiSlider
 		.on(
@@ -448,7 +455,6 @@
 	    };
 	    watorModel = new WatorModel(fishesOptions, sharksOptions);
 
-	    var totalCell = formValue.size * formValue.size;
 
 	    /** ENVIRONMENT **/
 	    statObject = new watorModel.statObject();
@@ -512,13 +518,14 @@
 	    while (interval.length > 0) {
 		window.clearInterval(interval.shift());
 	    }
+
 	    inter = window.setInterval(function() {
 		var now = new Date().getTime();
 		curveChart.series[0].addPoint([ now, statObject.sharkCount ],
-			false, true);
+			true, true);
 		curveChart.series[1].addPoint([ now, statObject.fishCount ],
 			true, true);
-	    }, 1000);
+		}, 1000);
 	    interval.push(inter);
 
 	    inter = window.setInterval(function() {
@@ -534,7 +541,7 @@
 		}
 		ageChart.series[0].setData(statObject.nbSharkPerAge, true);
 		ageChart.series[1].setData(statObject.nbFishPerAge, true);
-	    }, 1000);
+	}, 1000);
 	    interval.push(inter);
 
 	    var inter = window
