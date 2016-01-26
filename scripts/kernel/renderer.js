@@ -4,12 +4,12 @@ var Renderer = function(scale) {
 	this.environment = undefined;
 	this.scale = scale;
 
-	// 3D stuffs
-	this.scene = undefined;
-	this.camera = undefined;
-	this.renderer3D = undefined;
-	this.texture = undefined;
-	this.material = undefined;
+	this.positionXScaled = [];
+	this.positionYScaled = [];
+
+	this.widthScaled = undefined;
+	this.heightScaled = undefined;
+
 
 	this.init = function() {
 
@@ -32,49 +32,19 @@ var Renderer = function(scale) {
 		content.appendChild(canvas);
 
 		this.context = canvas.getContext('2d');
+
+		// PRECOMPUTE
+		for ( i = 0 ; i < this.environment.options.width ; i++ ){
+			this.positionXScaled[i] = i * this.scale;
+		}
+		for ( i = 0 ; i < this.environment.options.height ; i++ ){
+			this.positionYScaled[i] = i * this.scale;
+		}
+
+		this.widthScaled = (this.environment.options.width ) * this.scale;
+		this.heightScaled = (this.environment.options.height ) * this.scale;
 	};
 
-	this.init3D = function() {
-
-		var height = (this.environment.options.height * this.scale);
-		var width = (this.environment.options.width * this.scale);
-
-		height = nearestPow2(height);
-		width = nearestPow2(width);
-
-		// Canvas
-		var canvas = document.createElement("canvas");
-		canvas.setAttribute("width", "" + width);
-		canvas.setAttribute("height", "" + height);
-		this.context = canvas.getContext('2d');
-
-		// Document
-		this.renderer3D = new THREE.WebGLRenderer();
-		this.renderer3D.setSize(height, width);
-		document.body.appendChild(this.renderer3D.domElement);
-
-		this.scene = new THREE.Scene();
-
-		// Camera
-		this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
-		this.camera.position.z = 500;
-		this.camera.lookAt(this.scene.position);
-
-		var geometry = new THREE.SphereGeometry(height / 2, 100, 100);
-		this.texture = new THREE.Texture(canvas);
-		this.material = new THREE.MeshBasicMaterial({
-			map : this.texture
-		});
-		this.material.needsUpdate = true;
-
-		var earthMesh = new THREE.Mesh(geometry, this.material);
-		earthMesh.overdraw = true;
-		this.scene.add(earthMesh);
-		this.scene.add(this.camera);
-
-		this.renderer3D.render(this.scene, this.camera);
-
-	};
 
 	/**
 	 * Display the dijkstra number on the canvas.
@@ -100,8 +70,8 @@ var Renderer = function(scale) {
 
 		switch (agent.shape) {
 		case 'CIRCLE':
-			var centerX = (agent.position.x * this.scale) + this.scale / 2;
-			var centerY = (agent.position.y * this.scale) + this.scale / 2;
+			var centerX = this.positionXScaled[agent.position.x] + this.scale / 2;
+			var centerY = this.positionYScaled[agent.position.y] + this.scale / 2;
 			var radius = this.scale / 2;
 
 			this.context.beginPath();
@@ -113,7 +83,7 @@ var Renderer = function(scale) {
 			this.context.stroke();
 			break;
 		default:
-		    this.context.fillRect(agent.position.x * this.scale, agent.position.y * this.scale, this.scale, this.scale);
+		    this.context.fillRect(this.positionXScaled[agent.position.x], this.positionYScaled[agent.position.y], this.scale, this.scale);
 			break;
 		}
 	};
@@ -122,24 +92,21 @@ var Renderer = function(scale) {
 	 * Clean the canvas.
 	 */
 	this.clean = function() {
-		this.context.clearRect(0, 0, this.environment.options.width
-				* this.scale, this.environment.options.height * this.scale);
+		this.context.clearRect(0, 0, this.widthScaled, this.heightScaled);
 		this.context.fillStyle = "white";
-		this.context.fillRect(0, 0,
-				this.environment.options.width * this.scale,
-				this.environment.options.height * this.scale);
-		this.context.strokeRect(0, 0, this.environment.options.width * this.scale, this.environment.options.height * this.scale);
+		this.context.fillRect(0, 0,this.widthScaled, this.heightScaled);
+		this.context.strokeRect(0, 0, this.widthScaled, this.heightScaled);
 
 		if ( this.environment.options.grid ){
 			for ( i = 1 ; i < this.environment.options.width ; i++ ){
 					this.context.beginPath();
 					this.context.moveTo(0, i*this.scale);
-					this.context.lineTo(this.environment.options.width * this.scale, i*this.scale );
+					this.context.lineTo(this.widthScaled, i*this.scale );
 					this.context.stroke();
 
 					this.context.beginPath();
 					this.context.moveTo(i*this.scale, 0);
-					this.context.lineTo(i*this.scale, this.environment.options.height * this.scale);
+					this.context.lineTo(i*this.scale, this.heightScaled);
 					this.context.stroke();
 			}
 		}

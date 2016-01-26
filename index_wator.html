@@ -17,6 +17,7 @@
 
 <script src="scripts/chart/wator/ageChart.js"></script>
 <script src="scripts/chart/wator/curveChart.js"></script>
+<script src="scripts/chart/wator/ratioChart.js"></script>
 
 <link rel="stylesheet" type="text/css" href="style/style.css" />
 
@@ -223,6 +224,14 @@
 								placeholder="Enter your seed" />
 						</div>
 					</div>
+						<div class="col-lg-12 margin-top-50">
+							<div class="col-lg-3 margin-top-10">
+								<label>Graphics</label>
+							</div>
+							<div class="col-lg-9">
+								<input id="graphics" type="checkbox" data-size="medium" />
+							</div>
+						</div>
 				</div>
 
 
@@ -252,38 +261,33 @@
 			</div>
 		</div>
 	</div>
-	<div id="charts" class="col-md-6"></div>
-
+	<div class="col-md-6">
+		<div id="charts"></div>
+	</div>
+</body>
 	<script>
 	function displaySeedBox() {
 	    if ($('#fairnessSeed').is(':checked')) {
-		$('#fairnessSeed-value').hide();
+				$('#fairnessSeed-value').hide();
 	    } else {
-		$('#fairnessSeed-value').show();
+				$('#fairnessSeed-value').show();
 	    }
 	}
 
 	function readParamater() {
 	    return {
-		delay : +document.getElementById('delay').noUiSlider.get()
-			.replace('ms', ''),
-		size : +document.getElementById('size').noUiSlider.get(),
-		quantity : +document.getElementById('quantity').noUiSlider
-			.get(),
-		fishes : +document.getElementById('fishes').noUiSlider.get()
-			.replace('%', ''),
-		sharks : +document.getElementById('sharks').noUiSlider.get()
-			.replace('%', ''),
-		fish_breed : +document.getElementById('fish-breed').noUiSlider
-			.get(),
-		shark_breed : +document.getElementById('shark-breed').noUiSlider
-			.get(),
-		starving : +document.getElementById('starving').noUiSlider
-			.get(),
-		torWorld : $('#torWorld').is(':checked'),
-		fairness : $('#fairness').is(':checked'),
-		fairnessSeed : $('#fairnessSeed-value').val(),
-		displayGrid : $('#displayGrid').is(':checked'),
+				delay : +document.getElementById('delay').noUiSlider.get().replace('ms', ''),
+				size : +document.getElementById('size').noUiSlider.get(),
+				quantity : +document.getElementById('quantity').noUiSlider.get(),
+				fishes : +document.getElementById('fishes').noUiSlider.get().replace('%', ''),
+				sharks : +document.getElementById('sharks').noUiSlider.get().replace('%', ''),
+				fish_breed : +document.getElementById('fish-breed').noUiSlider.get(),
+				shark_breed : +document.getElementById('shark-breed').noUiSlider.get(),
+				starving : +document.getElementById('starving').noUiSlider.get(),
+				torWorld : $('#torWorld').is(':checked'),
+				fairness : $('#fairness').is(':checked'),
+				fairnessSeed : $('#fairnessSeed-value').val(),
+				displayGrid : $('#displayGrid').is(':checked'),
 	    };
 	}
 
@@ -292,24 +296,24 @@
 	    var input = document.getElementById(id + "-value");
 
 	    noUiSlider.create(slider, {
-		start : defaultValue,
-		connect : 'lower',
-		range : {
-		    'min' : min,
-		    'max' : max
-		},
-		format : wNumb({
-		    decimals : nbDecimal,
-		    postfix : unit,
-		})
+				start : defaultValue,
+				connect : 'lower',
+				range : {
+		    	'min' : min,
+		    	'max' : max
+				},
+				format : wNumb({
+		    	decimals : nbDecimal,
+		    	postfix : unit,
+				})
 	    });
 
 	    slider.noUiSlider.on('update', function(values, handle) {
-		input.value = values[handle];
+				input.value = values[handle];
 	    });
 
 	    input.addEventListener('change', function() {
-		slider.noUiSlider.set(this.value);
+				slider.noUiSlider.set(this.value);
 	    });
 	}
 
@@ -329,106 +333,55 @@
 	$('#fairness').bootstrapSwitch('state', true, true);
 	$('#displayGrid').bootstrapSwitch('state', false, true);
 	$('#fairnessSeed').bootstrapSwitch('state', true, true);
+	$('#graphics').bootstrapSwitch('state', true, true);
 
 	$('#displayGrid').on('switchChange.bootstrapSwitch', function(event, state) {
-  	if ( renderer )
+  	if ( environment )
 			renderer.environment.options.grid = state;
 	});
 
-	document.getElementById('delay').noUiSlider
-		.on(
-			'update',
-			function(values, handle) {
-			    if (environment) {
-				while (interval.length > 0) {
-				    window.clearInterval(interval.shift());
-				}
-				inter = window
-					.setInterval(
-						function() {
-						    var now = new Date()
-							    .getTime();
-						    curveChart.series[0]
-							    .addPoint(
-								    [
-									    now,
-									    statObject.sharkCount ],
-								    false, true);
-						    curveChart.series[1]
-							    .addPoint(
-								    [
-									    now,
-									    statObject.fishCount ],
-								    true, true);
-						}, 1000);
-				interval.push(inter);
-
-				inter = window
-					.setInterval(
-						function() {
-						    for (var i = 0; i <= statObject.maxAge; i++) {
-							if (statObject.nbFishPerAge[i] == undefined) {
-							    statObject.nbFishPerAge[i] = 0;
-							}
-							statObject.nbFishPerAge[i] *= (-1);
-
-							if (statObject.nbSharkPerAge[i] == undefined) {
-							    statObject.nbSharkPerAge[i] = 0;
-							}
-						    }
-						    ageChart.series[0]
-							    .setData(
-								    statObject.nbSharkPerAge,
-								    true);
-						    ageChart.series[1]
-							    .setData(
-								    statObject.nbFishPerAge,
-								    true);
-						}, 1000);
-				interval.push(inter);
-
-				var inter = window
-					.setInterval(
-						function() {
-						    environment.update(pause);
-						    document
-							    .getElementById("count").innerHTML = environment.roundCount;
-						}, readParamater().delay);
-				interval.push(inter);
-			    }
-			});
-
-	document.getElementById('size').noUiSlider.on('update', function(
-		values, handle) {
-	    document.getElementById('quantity').noUiSlider.updateOptions({
-		range : {
-		    'min' : 1,
-		    'max' : values[handle] * values[handle]
+	$('#graphics').on('switchChange.bootstrapSwitch', function(event, state) {
+  	if ( environment && $('#pauseButton').val() === "Play"){
+			startIntervals();
 		}
-	    });
+		if ( state ){
+			$('#charts').removeClass('hidden');
+		}else{
+			$('#charts').addClass('hidden');
+		}
+
 	});
 
-	document.getElementById("size-value").addEventListener(
-		'change',
-		function() {
-		    document.getElementById('quantity').noUiSlider
-			    .updateOptions({
+	document.getElementById('delay').noUiSlider.on('update', function(values, handle) {
+    if (environment) {
+			startIntervals();
+    }
+	});
+
+	document.getElementById('size').noUiSlider.on('update', function(values, handle) {
+    document.getElementById('quantity').noUiSlider.updateOptions({
+			range : {
+	    	'min' : 1,
+	    	'max' : values[handle] * values[handle]
+			}
+    });
+	});
+
+	document.getElementById("size-value").addEventListener('change',function() {
+    document.getElementById('quantity').noUiSlider
+	    .updateOptions({
 				range : {
-				    'min' : 1,
-				    'max' : this.value * this.value
+		    	'min' : 1,
+		    	'max' : this.value * this.value
 				}
-			    });
-		});
-
-	document.getElementById('sharks').noUiSlider.on('change', function(
-		values, handle) {
-	    document.getElementById('fishes').noUiSlider
-		    .set(100 - values[handle].replace('%', ''));
+	  });
 	});
-	document.getElementById('fishes').noUiSlider.on('change', function(
-		values, handle) {
-	    document.getElementById('sharks').noUiSlider
-		    .set(100 - values[handle].replace('%', ''));
+
+	document.getElementById('sharks').noUiSlider.on('change', function(values, handle) {
+    document.getElementById('fishes').noUiSlider.set(100 - values[handle].replace('%', ''));
+	});
+	document.getElementById('fishes').noUiSlider.on('change', function(values, handle) {
+	  document.getElementById('sharks').noUiSlider.set(100 - values[handle].replace('%', ''));
 	});
 
 	var environment;
@@ -437,123 +390,138 @@
 	var statObject;
 	var formValue;
 	var interval = [];
+	var counter;
 
-	var start = function() {
+	function start() {
+    var formValue = readParamater();
 
-	    var formValue = readParamater();
-
-	    /** RENDERER **/
-	    renderer = new Renderer();
-
-	    /** WATOR MODEL **/
-	    var fishesOptions = {
-		breedCount : formValue.fish_breed,
-	    };
-	    var sharksOptions = {
-		breedCount : formValue.shark_breed,
-		minimumEatCount : formValue.starving,
-	    };
-	    watorModel = new WatorModel(fishesOptions, sharksOptions);
+		/** COUNTER */
+		counter = document.getElementById("count");
 
 
-	    /** ENVIRONMENT **/
-	    statObject = new watorModel.statObject();
-	    var environmentOptions = {
-		height : formValue.size,
-		width : formValue.size,
-		mapConsole : false,
-		torWorld : formValue.torWorld,
-		fairness : formValue.fairness,
-		fairnessSeed : formValue.fairnessSeed,
-		grid : formValue.displayGrid,
-		statObject : statObject,
-		renderer : renderer,
-		actors : [
-			{
-			    type : watorModel.fish,
-			    count : Math.round(formValue.quantity
-				    * (formValue.fishes / 100))
-			},
-			{
-			    type : watorModel.shark,
-			    count : Math.round(formValue.quantity
-				    * (formValue.sharks / 100))
-			} ]
-	    };
-	    console.log(environmentOptions);
-	    environment = new Environment(environmentOptions);
+    /** RENDERER **/
+    renderer = new Renderer();
 
-	    /** SET ENVIRONMENT TO WATOR MODEL AND RENDERER **/
-	    watorModel.environment = environment;
-	    renderer.environment = environment;
+    /** WATOR MODEL **/
+    var fishesOptions = {
+			breedCount : formValue.fish_breed,
+    };
+    var sharksOptions = {
+			breedCount : formValue.shark_breed,
+			minimumEatCount : formValue.starving,
+    };
+    watorModel = new WatorModel(fishesOptions, sharksOptions);
 
-	    /** START ENVIRONMENT **/
-	    environment.init();
-	    environment.populate();
 
-	    /** CHARTS **/
-	    curveChart = new CurveChart();
-	    ageChart = new AgeChart();
+    /** ENVIRONMENT **/
+    statObject = new watorModel.statObject();
+    var environmentOptions = {
+			height : formValue.size,
+			width : formValue.size,
+			mapConsole : false,
+			torWorld : formValue.torWorld,
+			fairness : formValue.fairness,
+			fairnessSeed : formValue.fairnessSeed,
+			grid : formValue.displayGrid,
+			statObject : statObject,
+			renderer : renderer,
+			actors : [
+				{
+				    type : watorModel.fish,
+				    count : Math.round(formValue.quantity
+					    * (formValue.fishes / 100))
+				},
+				{
+				    type : watorModel.shark,
+				    count : Math.round(formValue.quantity
+					    * (formValue.sharks / 100))
+				}
+			]
+		};
+    environment = new Environment(environmentOptions);
 
-	    run();
-	    $("#pause-btn").val("Pause");
-	    $("#pause-btn").prop('disabled', false);
+    /** SET ENVIRONMENT TO WATOR MODEL AND RENDERER **/
+    watorModel.environment = environment;
+    renderer.environment = environment;
+
+    /** START ENVIRONMENT **/
+    environment.init();
+    environment.populate();
+
+    /** CHARTS **/
+    curveChart = new CurveChart();
+    ageChart = new AgeChart();
+		ratioChart = new RatioChart();
+
+    run();
+    $("#pause-btn").val("Pause");
+    $("#pause-btn").prop('disabled', false);
 	};
 
-	var pause = function() {
-	    var pauseButton = $("#pause-btn");
-	    if (pauseButton.val() == "Play") {
-		run();
-		pauseButton.val("Pause");
-	    } else {
-		// Delete previous intervals
+	function pause() {
+    var pauseButton = $("#pause-btn");
+    if (pauseButton.val() === "Play") {
+			run();
+			pauseButton.val("Pause");
+    } else {
+			// Delete previous intervals
+			while (interval.length > 0) {
+			    window.clearInterval(interval.shift());
+			}
+			pauseButton.val("Play");
+    }
+	};
+
+	function run() {
+		startIntervals();
+	}
+
+	function startIntervals(){
 		while (interval.length > 0) {
-		    window.clearInterval(interval.shift());
+			window.clearInterval(interval.shift());
+    }
+
+		interval.push(window.setInterval(function() {
+					requestAnimationFrame(updateEnv);
+		}, readParamater().delay));
+
+		if ( $('#graphics').is(':checked') ){
+			interval.push(window.setInterval(function() {
+				console.log('graph');
+				requestAnimationFrame(drawGraph1);
+				requestAnimationFrame(drawGraph2);
+				requestAnimationFrame(drawGraph3);
+			}, 500));
 		}
-		pauseButton.val("Play");
-	    }
-	};
+	}
 
-	var run = function(form) {
-	    while (interval.length > 0) {
-		window.clearInterval(interval.shift());
-	    }
+	function updateEnv(){
+		environment.update();
+		counter.innerHTML = environment.roundCount;
+	}
 
-	    inter = window.setInterval(function() {
-		var now = new Date().getTime();
-		curveChart.series[0].addPoint([ now, statObject.sharkCount ],
-			true, true);
-		curveChart.series[1].addPoint([ now, statObject.fishCount ],
-			true, true);
-		}, 1000);
-	    interval.push(inter);
-
-	    inter = window.setInterval(function() {
+	function drawGraph1(){
 		for (var i = 0; i <= statObject.maxAge; i++) {
-		    if (statObject.nbFishPerAge[i] == undefined) {
-			statObject.nbFishPerAge[i] = 0;
-		    }
-		    statObject.nbFishPerAge[i] *= (-1);
+			if (statObject.nbFishPerAge[i] == undefined) {
+				statObject.nbFishPerAge[i] = 0;
+			}
+			statObject.nbFishPerAge[i] *= (-1);
 
-		    if (statObject.nbSharkPerAge[i] == undefined) {
-			statObject.nbSharkPerAge[i] = 0;
-		    }
+			if (statObject.nbSharkPerAge[i] == undefined) {
+				statObject.nbSharkPerAge[i] = 0;
+			}
 		}
 		ageChart.series[0].setData(statObject.nbSharkPerAge, true);
 		ageChart.series[1].setData(statObject.nbFishPerAge, true);
-	}, 1000);
-	    interval.push(inter);
-
-	    var inter = window
-		    .setInterval(
-			    function() {
-				environment.update(pause);
-				document.getElementById("count").innerHTML = environment.roundCount;
-			    }, readParamater().delay);
-
-	    interval.push(inter);
 	}
-    </script>
+	function drawGraph2(){
+		var now = +document.getElementById("count").innerHTML;
+		curveChart.series[0].addPoint([ now, statObject.sharkCount ]);
+		curveChart.series[1].addPoint([ now, statObject.fishCount ]);
+	}
+	function drawGraph3(){
+		ratioChart.series[0].addPoint([ statObject.sharkCount, statObject.fishCount ]);
+	}
+</script>
 
-</body>
 </html>

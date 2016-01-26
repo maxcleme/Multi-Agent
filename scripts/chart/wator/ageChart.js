@@ -7,7 +7,8 @@ AgeChart = function () {
   $("#charts").append('<div id="chart-age" class="col-md-12 margin-top-50"/>');
   var $ageChart = $('#chart-age').highcharts({
     chart: {
-      type: 'bar'
+      type: 'bar',
+      animation: false
     },
     title: {
       text: 'Population pyramid of Shark and Fish'
@@ -54,7 +55,7 @@ AgeChart = function () {
 
     series: [{
       name: 'Shark',
-      color: '#000000'
+      color: '#F08080'
     }, {
       name: 'Fish',
       color : '#1E90FF'
