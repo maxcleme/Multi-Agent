@@ -19,8 +19,7 @@ CurveChart = function () {
       },
       startOnTick: true,
       endOnTick: true,
-      showLastLabel: true,
-      min: 0
+      showLastLabel: true
     },
     yAxis: {
       title: {

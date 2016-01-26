@@ -13,7 +13,6 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 
 	var that = this;
 
-	/** BALL * */
 	var Fish = this.fish = function() {
 		Agent.call(this, 'fish', 'DodgerBlue');
 	};

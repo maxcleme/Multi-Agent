@@ -26,11 +26,7 @@ var Environment = function (options) {
 		Math.seedrandom(this.options.fairnessSeed);	
 	}
     if (this.renderer) {
-      if (options.enable3D == true) {
-        this.renderer.init3D();
-      } else {
         this.renderer.init();
-      }
     }
 
     // Initialize the positions/population array.

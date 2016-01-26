@@ -46,7 +46,7 @@
 	display: none;
 }
 </style>
-
+<head>
 <link rel="stylesheet" type="text/css"
 	href="style/nouislider/nouislider.min.css" />
 <link rel="stylesheet" type="text/css"
@@ -66,10 +66,12 @@
 
 <link rel="stylesheet" type="text/css"
 	href="style/font-awesome-4.5.0/css/font-awesome.min.css" />
+<title>&#128032; &#128032;</title>	
+</head>
 <body>
 
 	<div id="title" class="text-center">
-		<h1>IDL - Sytème Multi Agent</h1>
+		<h1>IDL - Sytème Multi Agent &#128032;</h1>
 	</div>
 
 	<div class="col-lg-12  margin-top-50">
@@ -213,7 +215,7 @@
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="col-lg-3 margin-top-10">
-							<label>Seed</label>
+							<label>Random seed</label>
 						</div>
 						<div class="col-lg-4">
 							<input id="fairnessSeed" type="checkbox" data-size="medium"
@@ -241,7 +243,7 @@
 		<div class="col-lg-4 col-lg-offset-2">
 			<div class="affix">
 				<h4>
-					Count : <span id="count">0</span>
+					Round : <span id="count">0</span>
 				</h4>
 				<div id="content"></div>
 				<div class="row">
@@ -323,9 +325,9 @@
 	initSlider("quantity", 1, 2500, 1000, 0, "");
 	initSlider("fishes", 0, 100, 66, 0, "%");
 	initSlider("sharks", 0, 100, 34, 0, "%");
-	initSlider("fish-breed", 1, 15, 3, 0, "");
-	initSlider("shark-breed", 1, 15, 12, 0, "");
-	initSlider("starving", 1, 15, 5, 0, "");
+	initSlider("fish-breed", 1, 15, 2, 0, "");
+	initSlider("shark-breed", 1, 15, 9, 0, "");
+	initSlider("starving", 1, 15, 3, 0, "");
 	initSlider("size", 10, 100, 50, 0, "");
 	$('#fairnessSeed-value').hide();
 
@@ -341,7 +343,7 @@
 	});
 
 	$('#graphics').on('switchChange.bootstrapSwitch', function(event, state) {
-  	if ( environment && $('#pauseButton').val() === "Play"){
+  	if ( environment && $('#pauseButton').val() !== "Play"){
 			startIntervals();
 		}
 		if ( state ){
@@ -353,9 +355,9 @@
 	});
 
 	document.getElementById('delay').noUiSlider.on('update', function(values, handle) {
-    if (environment) {
-			startIntervals();
-    }
+		if (environment) {
+				startIntervals();
+		}
 	});
 
 	document.getElementById('size').noUiSlider.on('update', function(values, handle) {
@@ -395,8 +397,8 @@
 	function start() {
     var formValue = readParamater();
 
-		/** COUNTER */
-		counter = document.getElementById("count");
+	/** COUNTER */
+	counter = document.getElementById("count");
 
 
     /** RENDERER **/
@@ -415,6 +417,21 @@
 
     /** ENVIRONMENT **/
     statObject = new watorModel.statObject();
+	actors = [];
+	if ( formValue.fishes ){
+		actors.push({
+				    type : watorModel.fish,
+				    count : Math.round(formValue.quantity
+					    * (formValue.fishes / 100))
+				});
+	}
+	if ( formValue.sharks ){
+		actors.push({
+				    type : watorModel.shark,
+				    count : Math.round(formValue.quantity
+					    * (formValue.sharks / 100))
+				});
+	}
     var environmentOptions = {
 			height : formValue.size,
 			width : formValue.size,
@@ -425,18 +442,7 @@
 			grid : formValue.displayGrid,
 			statObject : statObject,
 			renderer : renderer,
-			actors : [
-				{
-				    type : watorModel.fish,
-				    count : Math.round(formValue.quantity
-					    * (formValue.fishes / 100))
-				},
-				{
-				    type : watorModel.shark,
-				    count : Math.round(formValue.quantity
-					    * (formValue.sharks / 100))
-				}
-			]
+			actors : actors
 		};
     environment = new Environment(environmentOptions);
 
@@ -450,8 +456,8 @@
 
     /** CHARTS **/
     curveChart = new CurveChart();
+	ratioChart = new RatioChart();
     ageChart = new AgeChart();
-		ratioChart = new RatioChart();
 
     run();
     $("#pause-btn").val("Pause");
@@ -479,7 +485,7 @@
 	function startIntervals(){
 		while (interval.length > 0) {
 			window.clearInterval(interval.shift());
-    }
+		}
 
 		interval.push(window.setInterval(function() {
 					requestAnimationFrame(updateEnv);
@@ -491,12 +497,12 @@
 				requestAnimationFrame(drawGraph1);
 				requestAnimationFrame(drawGraph2);
 				requestAnimationFrame(drawGraph3);
-			}, 500));
+			}, 100));
 		}
 	}
 
 	function updateEnv(){
-		environment.update();
+		environment.update(pause);
 		counter.innerHTML = environment.roundCount;
 	}
 
@@ -518,9 +524,18 @@
 		var now = +document.getElementById("count").innerHTML;
 		curveChart.series[0].addPoint([ now, statObject.sharkCount ]);
 		curveChart.series[1].addPoint([ now, statObject.fishCount ]);
+		if ( curveChart.series[0].data.length >= 10 ){
+			curveChart.series[0].data[0].remove();
+		}	
+		if ( curveChart.series[1].data.length >= 10 ){
+			curveChart.series[1].data[0].remove();
+		}	
 	}
 	function drawGraph3(){
 		ratioChart.series[0].addPoint([ statObject.sharkCount, statObject.fishCount ]);
+		if ( ratioChart.series[0].data.length >= 50 ){
+			ratioChart.series[0].data[0].remove();
+		}	
 	}
 </script>
 

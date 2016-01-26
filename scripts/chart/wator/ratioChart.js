@@ -25,20 +25,10 @@ RatioChart = function () {
       },
       min: 0
     },
-    legend: {
-      layout: 'vertical',
-      align: 'left',
-      verticalAlign: 'top',
-      x: 100,
-      y: 70,
-      floating: true,
-      backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
-      borderWidth: 1
-    },
     plotOptions: {
       scatter: {
         marker: {
-          radius: 5,
+          radius: 2,
           states: {
             hover: {
               enabled: true,
@@ -60,7 +50,6 @@ RatioChart = function () {
       }
     },
     series: [{
-      name: 'Shark/Tuna',
       color: 'rgba(0, 0, 0, .5)'
     }]
   });
