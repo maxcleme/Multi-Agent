@@ -94,6 +94,18 @@ var Renderer = function(scale) {
 					this.context.stroke();
 			}
 		}
-
 	};
+
+	/**
+   * Display the dijkstra number on the canvas.
+   */
+  this.displayDijkstraNumbering = function(){
+    var dijkstraGrid = this.environment.dijkstraGrid;
+    for(var x = 0; x < dijkstraGrid.length; x++){
+      for(var y = 0; y < dijkstraGrid[x].length; y++){
+        this.context.fillStyle = 'black';
+        this.context.fillText(dijkstraGrid[x][y] ? ""+dijkstraGrid[x][y] : "", (x)* this.scale + this.scale/3, ((y+1)* this.scale - this.scale/3));
+      }
+    }
+  };
 };

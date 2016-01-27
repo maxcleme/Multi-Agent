@@ -13,8 +13,14 @@ var Environment = function (options) {
   this.agents = [];
   this.roundCount = 0;
 
+  this.pressedDirections = {
+    x: 0,
+    y: 0
+  };
+
   // Check if environment has changed, stop otherwise
   this.change = false;
+  this.end = false;
 
   var that = this;
 
@@ -23,7 +29,7 @@ var Environment = function (options) {
    */
   this.init = function () {
 	if (this.options.fairnessSeed) {
-		Math.seedrandom(this.options.fairnessSeed);	
+		Math.seedrandom(this.options.fairnessSeed);
 	}
     if (this.renderer) {
         this.renderer.init();
@@ -83,6 +89,12 @@ var Environment = function (options) {
           actors.shift();
         }
 
+      }
+    }
+
+    for (  i = 0 ; i < this.agents.length ; i++ ){
+      if ( this.agents[i].init ){
+        this.agents[i].init();
       }
     }
   };
@@ -190,8 +202,11 @@ var Environment = function (options) {
       if (this.renderer) {
         this.renderer.setColor(agent);
       }
-
     });
+
+    if (this.options.dijkstraNumbering) {
+      this.renderer.displayDijkstraNumbering();
+    }
 
     if (this.options.mapConsole) {
       this.displayEnvironment();
@@ -200,10 +215,12 @@ var Environment = function (options) {
     if (this.statObject) {
       this.statObject.callback();
     }
-
-    if (this.change == false && onStop) {
+    if ( this.end ){
+      onStop();
+    }else if ( !this.change ){
       onStop();
     }
+
 
     this.roundCount++;
 
@@ -219,7 +236,7 @@ var Environment = function (options) {
         case 2:
           return this.randomFree(agent);
         default:
-          return this.randomVonNeumann(agent);
+          return this.randomMoore(agent);
       }
     }
   };
@@ -297,15 +314,13 @@ var Environment = function (options) {
           that.dijkstraGrid[browsedPosition.x][browsedPosition.y] = number;
           browsedPositions.push(browsedPosition);
         }
-      });
+      }, true);
 
     });
 
     if (browsedPositions.length > 0) this.setDijkstraNumbering(browsedPositions, number + 1);
 
-    if (this.options.dijkstraNumbering) {
-      this.renderer.displayDijkstraNumbering();
-    }
+
 
     return this.dijkstraGrid;
   };
@@ -375,14 +390,7 @@ var Environment = function (options) {
    */
   this.browseNeighbour = function (position, coordinateFunction, free) {
     if (position) {
-      switch (this.options.neighborhood) {
-        case 0:
-          return this.randomMoore(position, coordinateFunction, free);
-        case 1:
-        case 2:
-        default:
-          return this.browseVonNeighbour(position, coordinateFunction, free);
-      }
+          return this.browseMooreNeighbour(position, coordinateFunction, free);
     }
   };
 
@@ -418,9 +426,9 @@ var Environment = function (options) {
     var y = position.y;
     for (var i = -1; i <= 1; i++) {
       for (var j = -1; j <= 1; j++) {
-        if ((i != x || j != y) && i != j) {
+        if (i !== j && (i + j) !== 0) {
           var browsedPosition = this.getPosition(x + i, y + j);
-          if (free && this.population[browsedPosition.x][browsedPosition.y]) continue;
+          if (browsedPosition && free && this.population[browsedPosition.x][browsedPosition.y]) continue;
           else if (browsedPosition && coordinateFunction(browsedPosition)) return;
         }
       }
@@ -434,14 +442,21 @@ var Environment = function (options) {
    * @param free true to browse only free neighbour, false to browse all.
    */
   this.minNeighbour = function (position, free) {
-    var minPosition, minNumber;
+    var minNumber;
+    var minPosition = [];
     this.browseNeighbour(position, function (position) {
-      if (!minPosition || isNaN(minNumber) || minNumber > that.dijkstraGrid[position.x][position.y]) {
-        minPosition = position;
+      if (!minPosition.length || isNaN(minNumber) || minNumber >= that.dijkstraGrid[position.x][position.y]) {
+        if (that.dijkstraGrid[position.x][position.y] == minNumber) {
+          minPosition.push(position);
+        } else {
+          minPosition = [];
+          minPosition.push(position);
+        }
         minNumber = that.dijkstraGrid[position.x][position.y];
       }
     }, free);
-    return minPosition;
+    shuffleArray(minPosition);
+    return minPosition[0];
   };
 
   /**

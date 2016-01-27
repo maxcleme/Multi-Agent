@@ -7,17 +7,12 @@
 <script src="scripts/jquery-2.2.0.min.js"></script>
 <script src="scripts/wNumb.js"></script>
 <script src="scripts/seedrandom.min.js"></script>
-<script src="scripts/highcharts.js"></script>
 
 <script src="scripts/kernel/renderer.js"></script>
 <script src="scripts/kernel/core.js"></script>
 
-<script src="scripts/models/wator_model.js"></script>
+<script src="scripts/models/chaser_model.js"></script>
 
-
-<script src="scripts/chart/wator/ageChart.js"></script>
-<script src="scripts/chart/wator/curveChart.js"></script>
-<script src="scripts/chart/wator/ratioChart.js"></script>
 
 <link rel="stylesheet" type="text/css" href="style/style.css" />
 
@@ -71,7 +66,7 @@
 <body>
 
 	<div id="title" class="text-center">
-		<h1>IDL - Sytème Multi Agent &#128032;</h1>
+		<h1>IDL - Sytème Multi Agent</h1>
 	</div>
 
 	<div class="col-lg-12  margin-top-50">
@@ -94,7 +89,7 @@
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="col-lg-3 margin-top-10">
-							<label>Agent</label>
+							<label>Chaser</label>
 						</div>
 						<div class="col-lg-6 margin-top-10">
 							<div class="sliders" id="quantity"></div>
@@ -104,71 +99,22 @@
 						</div>
 					</div>
 				</div>
-				<div class="row">
+        <div class="row">
 					<div class="col-lg-12">
 						<div class="col-lg-3 margin-top-10">
-							<label>Fishes</label>
+							<label>Wall</label>
 						</div>
 						<div class="col-lg-6 margin-top-10">
-							<div class="sliders" id="fishes"></div>
+							<div class="sliders" id="wall"></div>
 						</div>
 						<div class="col-lg-3">
-							<input id="fishes-value" class="form-control" type=text />
+							<input id="wall-value" class="form-control" type=text />
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="col-lg-3 margin-top-10">
-							<label>Sharks</label>
-						</div>
-						<div class="col-lg-6 margin-top-10">
-							<div class="sliders" id="sharks"></div>
-						</div>
-						<div class="col-lg-3">
-							<input id="sharks-value" class="form-control" type=text />
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="col-lg-3 margin-top-10">
-							<label>Fish breed</label>
-						</div>
-						<div class="col-lg-6 margin-top-10">
-							<div class="sliders" id="fish-breed"></div>
-						</div>
-						<div class="col-lg-3">
-							<input id="fish-breed-value" class="form-control" type=text />
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="col-lg-3 margin-top-10">
-							<label>Shark breed</label>
-						</div>
-						<div class="col-lg-6 margin-top-10">
-							<div class="sliders" id="shark-breed"></div>
-						</div>
-						<div class="col-lg-3">
-							<input id="shark-breed-value" class="form-control" type=text />
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="col-lg-3 margin-top-10">
-							<label>Starving time</label>
-						</div>
-						<div class="col-lg-6 margin-top-10">
-							<div class="sliders" id="starving"></div>
-						</div>
-						<div class="col-lg-3">
-							<input id="starving-value" class="form-control" type=text />
-						</div>
-					</div>
-				</div>
+
+
+
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="col-lg-3 margin-top-10">
@@ -179,6 +125,16 @@
 						</div>
 						<div class="col-lg-3">
 							<input id="size-value" class="form-control" type=text />
+						</div>
+					</div>
+				</div>
+        <div class="row">
+					<div class="col-lg-12">
+						<div class="col-lg-3 margin-top-10">
+							<label>Dijkstra numbering</label>
+						</div>
+						<div class="col-lg-9">
+							<input id="dijkstraNumbering" type="checkbox" data-size="medium" />
 						</div>
 					</div>
 				</div>
@@ -225,15 +181,7 @@
 							<input id="fairnessSeed-value" class="form-control" type=text
 								placeholder="Enter your seed" />
 						</div>
-					</div>
-						<div class="col-lg-12 margin-top-50">
-							<div class="col-lg-3 margin-top-10">
-								<label>Graphics</label>
-							</div>
-							<div class="col-lg-9">
-								<input id="graphics" type="checkbox" data-size="medium" />
-							</div>
-						</div>
+          </div>
 				</div>
 
 
@@ -281,11 +229,8 @@
 				delay : +document.getElementById('delay').noUiSlider.get().replace('ms', ''),
 				size : +document.getElementById('size').noUiSlider.get(),
 				quantity : +document.getElementById('quantity').noUiSlider.get(),
-				fishes : +document.getElementById('fishes').noUiSlider.get().replace('%', ''),
-				sharks : +document.getElementById('sharks').noUiSlider.get().replace('%', ''),
-				fish_breed : +document.getElementById('fish-breed').noUiSlider.get(),
-				shark_breed : +document.getElementById('shark-breed').noUiSlider.get(),
-				starving : +document.getElementById('starving').noUiSlider.get(),
+        wall : +document.getElementById('wall').noUiSlider.get().replace('%', ''),
+        dijkstraNumbering : $('#dijkstraNumbering').is(':checked'),
 				torWorld : $('#torWorld').is(':checked'),
 				fairness : $('#fairness').is(':checked'),
 				fairnessSeed : $('#fairnessSeed-value').val(),
@@ -321,33 +266,22 @@
 
 
 
-	initSlider("delay", 1, 250, 25, 0, "ms");
-	initSlider("quantity", 1, 2500, 1000, 0, "");
-	initSlider("fishes", 0, 100, 66, 0, "%");
-	initSlider("sharks", 0, 100, 34, 0, "%");
-	initSlider("fish-breed", 1, 15, 2, 0, "");
-	initSlider("shark-breed", 1, 15, 9, 0, "");
-	initSlider("starving", 1, 15, 3, 0, "");
-	initSlider("size", 10, 100, 50, 0, "");
+	initSlider("delay", 1, 250, 33, 0, "ms");
+	initSlider("quantity", 0, 5, 1, 0, "");
+	initSlider("size", 10, 100, 30, 0, "");
+	initSlider("wall", 0, 80, 10, 0, "%");
 	$('#fairnessSeed-value').hide();
 
-	$('#torWorld').bootstrapSwitch('state', true, true);
+
+	$('#dijkstraNumbering').bootstrapSwitch('state', true, true);
+  $('#torWorld').bootstrapSwitch('state', true, true);
 	$('#fairness').bootstrapSwitch('state', true, true);
-	$('#displayGrid').bootstrapSwitch('state', false, true);
+	$('#displayGrid').bootstrapSwitch('state', true, true);
 	$('#fairnessSeed').bootstrapSwitch('state', true, true);
-	$('#graphics').bootstrapSwitch('state', false, true);
 
 	$('#displayGrid').on('switchChange.bootstrapSwitch', function(event, state) {
   	if ( environment )
 			renderer.environment.options.grid = state;
-	});
-
-	$('#graphics').on('switchChange.bootstrapSwitch', function(event, state) {
-		if ( state && $('#pause-btn').val() === "Play"){
-			$('#charts').removeClass('hidden');
-		}else{
-			$('#charts').addClass('hidden');
-		}
 	});
 
 	document.getElementById('delay').noUiSlider.on('update', function(values, handle) {
@@ -356,31 +290,8 @@
 		}
 	});
 
-	document.getElementById('size').noUiSlider.on('update', function(values, handle) {
-    document.getElementById('quantity').noUiSlider.updateOptions({
-			range : {
-	    	'min' : 1,
-	    	'max' : values[handle] * values[handle]
-			}
-    });
-	});
 
-	document.getElementById("size-value").addEventListener('change',function() {
-    document.getElementById('quantity').noUiSlider
-	    .updateOptions({
-				range : {
-		    	'min' : 1,
-		    	'max' : this.value * this.value
-				}
-	  });
-	});
 
-	document.getElementById('sharks').noUiSlider.on('change', function(values, handle) {
-    document.getElementById('fishes').noUiSlider.set(100 - values[handle].replace('%', ''));
-	});
-	document.getElementById('fishes').noUiSlider.on('change', function(values, handle) {
-	  document.getElementById('sharks').noUiSlider.set(100 - values[handle].replace('%', ''));
-	});
 
 	var environment;
 	var renderer;
@@ -393,76 +304,62 @@
 	function start() {
     var formValue = readParamater();
 
-	/** COUNTER */
-	counter = document.getElementById("count");
+	  /** COUNTER */
+	  counter = document.getElementById("count");
 
 
     /** RENDERER **/
     renderer = new Renderer();
 
-    /** WATOR MODEL **/
-    var fishesOptions = {
-			breedCount : formValue.fish_breed,
+    /** CHASER MODEL **/
+    var chaserOptions = {
     };
-    var sharksOptions = {
-			breedCount : formValue.shark_breed,
-			minimumEatCount : formValue.starving,
-    };
-    watorModel = new WatorModel(fishesOptions, sharksOptions);
+    chaserModel = new ChaserModel(chaserOptions);
 
 
     /** ENVIRONMENT **/
-
-    statObject = undefined ;
-		if ( $('#graphics').is(':checked')  ){
-			$('#charts').removeClass('hidden');
-			statObject = new watorModel.statObject();
-		}
-	actors = [];
-	if ( formValue.fishes ){
-		actors.push({
-				    type : watorModel.fish,
-				    count : Math.round(formValue.quantity
-					    * (formValue.fishes / 100))
-				});
-	}
-	if ( formValue.sharks ){
-		actors.push({
-				    type : watorModel.shark,
-				    count : Math.round(formValue.quantity
-					    * (formValue.sharks / 100))
-				});
-	}
+	   actors = [];
+  	if ( formValue.quantity ){
+  		actors.push({
+  				    type : chaserModel.chaser,
+  				    count : formValue.quantity
+  				});
+  	}
+    actors.push({
+            type : chaserModel.wall,
+            count : Math.round(formValue.size * formValue.size * (formValue.wall / 100))
+    });
+    actors.push({
+            type : chaserModel.target,
+            count : 1
+    });
     var environmentOptions = {
 			height : formValue.size,
 			width : formValue.size,
 			mapConsole : false,
+      dijkstraNumbering : formValue.dijkstraNumbering,
 			torWorld : formValue.torWorld,
 			fairness : formValue.fairness,
 			fairnessSeed : formValue.fairnessSeed,
 			grid : formValue.displayGrid,
-			statObject : statObject,
 			renderer : renderer,
 			actors : actors
 		};
     environment = new Environment(environmentOptions);
 
     /** SET ENVIRONMENT TO WATOR MODEL AND RENDERER **/
-    watorModel.environment = environment;
+    chaserModel.environment = environment;
     renderer.environment = environment;
 
     /** START ENVIRONMENT **/
     environment.init();
     environment.populate();
 
-    /** CHARTS **/
-    curveChart = new CurveChart();
-	ratioChart = new RatioChart();
-    ageChart = new AgeChart();
 
     run();
     $("#pause-btn").val("Pause");
     $("#pause-btn").prop('disabled', false);
+    $(':focus').blur();
 	};
 
 	function pause() {
@@ -491,53 +388,89 @@
 		interval.push(window.setInterval(function() {
 					requestAnimationFrame(updateEnv);
 		}, readParamater().delay));
-
-		if ( $('#graphics').is(':checked') ){
-			interval.push(window.setInterval(function() {
-				console.log('graph');
-				requestAnimationFrame(drawGraph1);
-				requestAnimationFrame(drawGraph2);
-				requestAnimationFrame(drawGraph3);
-			}, 100));
-		}
 	}
 
 	function updateEnv(){
-		environment.update(pause);
+		environment.update(end);
 		counter.innerHTML = environment.roundCount;
 	}
 
-	function drawGraph1(){
-		for (var i = 0; i <= statObject.maxAge; i++) {
-			if (statObject.nbFishPerAge[i] == undefined) {
-				statObject.nbFishPerAge[i] = 0;
-			}
-			statObject.nbFishPerAge[i] *= (-1);
+  function end(){
+      while (interval.length > 0) {
+  			window.clearInterval(interval.shift());
+  		}
+      $("#pause-btn").prop('disabled', true);
+  }
 
-			if (statObject.nbSharkPerAge[i] == undefined) {
-				statObject.nbSharkPerAge[i] = 0;
-			}
-		}
-		ageChart.series[0].setData(statObject.nbSharkPerAge, true);
-		ageChart.series[1].setData(statObject.nbFishPerAge, true);
-	}
-	function drawGraph2(){
-		var now = +document.getElementById("count").innerHTML;
-		curveChart.series[0].addPoint([ now, statObject.sharkCount ]);
-		curveChart.series[1].addPoint([ now, statObject.fishCount ]);
-		if ( curveChart.series[0].data.length >= 25 ){
-			curveChart.series[0].data[0].remove();
-		}
-		if ( curveChart.series[1].data.length >= 25 ){
-			curveChart.series[1].data[0].remove();
-		}
-	}
-	function drawGraph3(){
-		ratioChart.series[0].addPoint([ statObject.sharkCount, statObject.fishCount ]);
-		if ( ratioChart.series[0].data.length >= 50 ){
-			ratioChart.series[0].data[0].remove();
-		}
-	}
+
+  var keyDowns = new Array();
+  document.onkeydown = setPressedDirections;
+  document.onkeyup = resetPressedDirections;
+
+  function resetPressedDirections(e) {
+    if ( !environment )
+      return;
+    e = e || window.event;
+    if (keyDowns.indexOf(e.keyCode) >= 0) {
+      keyDowns.splice(keyDowns.indexOf(e.keyCode),1);
+    }
+    if ( keyDowns.length === 0 ) {
+        environment.pressedDirections = {
+          x: 0,
+          y: 0
+        }
+    }
+  }
+
+function setPressedDirections(e) {
+  if ( e.keyCode === 82 ){
+    start();
+  }
+
+  if ( !environment )
+    return;
+  e = e || window.event;
+
+  if (keyDowns.indexOf(e.keyCode) < 0 && e.keyCode !== 32) {
+    keyDowns.push(e.keyCode);
+  }
+
+  switch(e.keyCode){
+    case 37:
+      // LEFT
+      environment.pressedDirections = {
+        x: -1,
+        y: 0
+      }
+      break;
+    case 38:
+      // UP
+      environment.pressedDirections = {
+        x: 0,
+        y: -1
+      }
+      break;
+    case 39:
+      // RIGHT
+      environment.pressedDirections = {
+        x: 1,
+        y: 0
+      }
+      break;
+    case 40:
+      // DOWN
+      environment.pressedDirections = {
+        x: 0,
+        y: 1
+      }
+      break;
+
+    case 32:
+      pause();
+      break;
+    }
+  }
+
 </script>
 
 </html>
