@@ -15,7 +15,7 @@ var ChaserModel = function(chaserOptions) {
 
 	var Chaser = this.chaser = function() {
 		Agent.call(this, 'chaser', 'GoldenRod');
-		this.IAlevel = chaserOptions.IAlevel / 100
+		this.cleverness = chaserOptions.cleverness / 10;
 	};
 
 	var Target = this.target = function() {
@@ -46,7 +46,7 @@ var ChaserModel = function(chaserOptions) {
 		}else {
 			if (that.environment.roundCountWithSuperPowerRemaining > 0) {
 				this.color = that.environment.roundCountWithSuperPowerRemaining%2 == 0 ? 'red' : 'black';
-				if (Math.random() > this.IAlevel) {
+				if (Math.random() > this.cleverness) {
 					nextPos = that.environment.randomPlace(this,true);
 				}
 				else {
@@ -76,7 +76,7 @@ var ChaserModel = function(chaserOptions) {
 			}
 			else if (a instanceof SuperPower) {
 				that.environment.removeAgent(a);
-				that.environment.roundCountWithSuperPowerRemaining += 50;
+				that.environment.roundCountWithSuperPowerRemaining = 50;
 				that.environment.moveAgent(this, nextPos.x, nextPos.y);
 				that.environment.setDijkstraNumbering(this.position);
 			}

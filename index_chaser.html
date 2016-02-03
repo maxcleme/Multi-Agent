@@ -131,10 +131,10 @@
 							<label>IA level</label>
 						</div>
 						<div class="col-lg-6 margin-top-10">
-							<div class="sliders" id="ialevel"></div>
+							<div class="sliders" id="cleverness"></div>
 						</div>
 						<div class="col-lg-3">
-							<input id="ialevel-value" class="form-control" type=text />
+							<input id="cleverness-value" class="form-control" type=text />
 						</div>
 					</div>
 				</div>
@@ -255,14 +255,14 @@
 				delay : +document.getElementById('delay').noUiSlider.get().replace('ms', ''),
 				size : +document.getElementById('size').noUiSlider.get(),
 				quantity : +document.getElementById('quantity').noUiSlider.get(),
-				superPower : +document.getElementById('superPower').noUiSlider.get().replace('%', ''),
+				superPower : +document.getElementById('superPower').noUiSlider.get().replace('', ''),
 				wall : +document.getElementById('wall').noUiSlider.get().replace('%', ''),
 				dijkstraNumbering : $('#dijkstraNumbering').is(':checked'),
 				torWorld : $('#torWorld').is(':checked'),
 				fairness : $('#fairness').is(':checked'),
 				fairnessSeed : $('#fairnessSeed-value').val(),
 				displayGrid : $('#displayGrid').is(':checked'),
-				ialevel : +document.getElementById('ialevel').noUiSlider.get().replace('%', ''),
+				cleverness : +document.getElementById('cleverness').noUiSlider.get().replace('%', ''),
 	    };
 	}
 
@@ -296,8 +296,8 @@
 
 	initSlider("delay", 1, 250, 200, 0, "ms");
 	initSlider("quantity", 0, 5, 1, 0, "");
-	initSlider("superPower", 0, 25, 3, 0, "%");
-	initSlider("ialevel", 0, 100, 50, 0, "%");
+	initSlider("superPower", 0, 25, 10, 0, "");
+	initSlider("cleverness", 0, 10, 5, 0, "");
 	initSlider("size", 10, 100, 30, 0, "");
 	initSlider("wall", 0, 25, 10, 0, "%");
 	$('#fairnessSeed-value').hide();
@@ -343,7 +343,7 @@
 
     /** CHASER MODEL **/
     var chaserOptions = {
-		IAlevel : formValue.ialevel
+		cleverness : formValue.cleverness
     };
     chaserModel = new ChaserModel(chaserOptions);
 
@@ -366,7 +366,7 @@
     });
 	actors.push({
             type : chaserModel.superpower,
-            count : Math.round(formValue.size * formValue.size * (formValue.superPower / 100))
+            count : formValue.superPower
     });
     var environmentOptions = {
 			height : formValue.size,
