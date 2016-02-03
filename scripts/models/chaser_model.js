@@ -46,16 +46,15 @@ var ChaserModel = function(chaserOptions) {
 		}else {
 			if (that.environment.roundCountWithSuperPowerRemaining > 0) {
 				this.color = that.environment.roundCountWithSuperPowerRemaining%2 == 0 ? 'red' : 'black';
-				console.log(this.IAlevel)
 				if (Math.random() > this.IAlevel) {
-					nextPos = that.environment.randomPlace(this,true);
+					nextPos = that.environment.randomPlace(this);
 				}
 				else {
-					nextPos = that.environment.maxNeighbour(this.position);
+					nextPos = that.environment.maxNeighbour(this.position,true);
 				}
 			} else {
 				this.color = 'GoldenRod';
-				nextPos = that.environment.minNeighbour(this.position);	
+				nextPos = that.environment.minNeighbour(this.position,true);	
 			}
 			if ( nextPos ){
 				that.environment.moveAgent(this, nextPos.x, nextPos.y);
