@@ -12,6 +12,7 @@ var Environment = function (options) {
   this.freePlaces = [];
   this.agents = [];
   this.roundCount = 0;
+  this.roundCountWithSuperPowerRemaining = 0;
 
   this.pressedDirections = {
     x: 0,
@@ -459,6 +460,24 @@ var Environment = function (options) {
     return minPosition[0];
   };
 
+  this.maxNeighbour = function (fposition, free) {
+    var maxNumber;
+    var maxPosition = [];
+    this.browseNeighbour(fposition, function (position) {
+      if (!maxPosition.length || isNaN(maxNumber) || maxNumber <= that.dijkstraGrid[position.x][position.y]) {
+        if (that.dijkstraGrid[position.x][position.y] == maxNumber) {
+          maxPosition.push(position);
+        } else {
+          maxPosition = [];
+          maxPosition.push(position);
+        }
+        maxNumber = that.dijkstraGrid[position.x][position.y];
+      }
+    }, free);
+    shuffleArray(maxPosition);
+    return maxPosition[0];
+  };
+  
   /**
    * Display the environment into the console.
    */

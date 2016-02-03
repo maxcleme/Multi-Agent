@@ -10,11 +10,12 @@ var ChaserModel = function(chaserOptions) {
 			[-1, 1],
 			[1, -1]
 	];
-
+	
 	var that = this;
 
 	var Chaser = this.chaser = function() {
 		Agent.call(this, 'chaser', 'GoldenRod');
+		this.IAlevel = chaserOptions.IAlevel / 100
 	};
 
 	var Target = this.target = function() {
@@ -23,6 +24,10 @@ var ChaserModel = function(chaserOptions) {
 
 	var Wall = this.wall = function() {
 		Agent.call(this, 'wall', 'Peru');
+	};
+	
+	var SuperPower = this.superpower = function() {
+		Agent.call(this, 'superpower', 'Blue');
 	};
 
 	Target.prototype.nextPosition = function(){
@@ -38,8 +43,20 @@ var ChaserModel = function(chaserOptions) {
 
 		if ( that.environment.dijkstraGrid[this.position.x][this.position.y] === 1){
 			that.environment.end = true;
-		}else{
-			nextPos = that.environment.minNeighbour(this.position, true);
+		}else {
+			if (that.environment.roundCountWithSuperPowerRemaining > 0) {
+				this.color = that.environment.roundCountWithSuperPowerRemaining%2 == 0 ? 'red' : 'black';
+				console.log(this.IAlevel)
+				if (Math.random() > this.IAlevel) {
+					nextPos = that.environment.randomPlace(this,true);
+				}
+				else {
+					nextPos = that.environment.maxNeighbour(this.position);
+				}
+			} else {
+				this.color = 'GoldenRod';
+				nextPos = that.environment.minNeighbour(this.position);	
+			}
 			if ( nextPos ){
 				that.environment.moveAgent(this, nextPos.x, nextPos.y);
 			}
@@ -52,10 +69,26 @@ var ChaserModel = function(chaserOptions) {
 	};
 	Target.prototype.doIt = function() {
 		nextPos = this.nextPosition();
-		if ( nextPos && that.environment.getAgent(nextPos.x,nextPos.y) === undefined){
-			that.environment.moveAgent(this, nextPos.x, nextPos.y);
-			that.environment.setDijkstraNumbering(this.position);
+		if (nextPos) {
+			a = that.environment.getAgent(nextPos.x,nextPos.y);
+			if (a === undefined){
+				that.environment.moveAgent(this, nextPos.x, nextPos.y);
+				that.environment.setDijkstraNumbering(this.position);
+			}
+			else if (a instanceof SuperPower) {
+				that.environment.removeAgent(a);
+				that.environment.roundCountWithSuperPowerRemaining += 50;
+				that.environment.moveAgent(this, nextPos.x, nextPos.y);
+				that.environment.setDijkstraNumbering(this.position);
+			}
+			if (that.environment.roundCountWithSuperPowerRemaining > 0) {
+				that.environment.roundCountWithSuperPowerRemaining --;
+			}
 		}
+	};
+	
+	SuperPower.prototype.doIt = function() {
+		return;
 	};
 
 
