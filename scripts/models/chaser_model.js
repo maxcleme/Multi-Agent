@@ -47,7 +47,7 @@ var ChaserModel = function(chaserOptions) {
 			if (that.environment.roundCountWithSuperPowerRemaining > 0) {
 				this.color = that.environment.roundCountWithSuperPowerRemaining%2 == 0 ? 'red' : 'black';
 				if (Math.random() > this.IAlevel) {
-					nextPos = that.environment.randomPlace(this);
+					nextPos = that.environment.randomPlace(this,true);
 				}
 				else {
 					nextPos = that.environment.maxNeighbour(this.position,true);

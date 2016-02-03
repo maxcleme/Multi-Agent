@@ -227,7 +227,7 @@ var Environment = function (options) {
 
   };
 
-  this.randomPlace = function (agent) {
+  this.randomPlace = function (agent,free) {
     if (agent) {
       switch (this.options.neighborhood) {
         case 0:
@@ -237,7 +237,7 @@ var Environment = function (options) {
         case 2:
           return this.randomFree(agent);
         default:
-          return this.randomMoore(agent);
+          return this.randomMoore(agent,free);
       }
     }
   };
@@ -263,15 +263,28 @@ var Environment = function (options) {
    * @param agent the agent of the cell
    * @returns position of the random cell.
    */
-  this.randomMoore = function (agent) {
+  this.randomMoore = function (agent,free) {
     var random = Math.random();
     var newX = agent.position.x, newY = agent.position.y;
-    if (random < 0.25) newX++;
-    else if (random >= 0.25 && random < 0.5) newX--;
-    else if (random >= 0.5 && random < 0.75) newY++;
-    else newY--;
-
-    return this.getPosition(newX, newY);
+	var n = [];
+	n.push(this.getPosition(newX+1, newY));
+	n.push(this.getPosition(newX, newY+1));
+	n.push(this.getPosition(newX-1, newY));
+	n.push(this.getPosition(newX, newY-1));
+	
+	res = [];
+	if (free) {
+		for (var i in n) {
+			if (this.getAgent(n[i].x,n[i].y) == undefined) {
+					res.push(n[i]);
+			}
+		}
+	}
+	else {
+		res = n;
+	}
+	shuffleArray(res);
+   return res[0];
   };
 
   /**
