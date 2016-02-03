@@ -275,7 +275,7 @@ var Environment = function (options) {
 	res = [];
 	if (free) {
 		for (var i in n) {
-			if (this.getAgent(n[i].x,n[i].y) == undefined) {
+			if (n[i] && this.getAgent(n[i].x,n[i].y) == undefined) {
 					res.push(n[i]);
 			}
 		}
