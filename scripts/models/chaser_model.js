@@ -12,10 +12,13 @@ var ChaserModel = function(chaserOptions) {
 	];
 	
 	var that = this;
-
+	var chaserHandicap = chaserOptions.handicap;
+	var superPowerRunCount = chaserOptions.superPowerRunCount || 1;
+	
 	var Chaser = this.chaser = function(env) {
 		Agent.call(this, 'chaser', 'GoldenRod', env);
 		this.cleverness = chaserOptions.cleverness / 10;
+		this.hadicap = chaserHandicap;
 	};
 
 	var Target = this.target = function(env) {
@@ -44,6 +47,13 @@ var ChaserModel = function(chaserOptions) {
 		if ( this.environment.dijkstraGrid[this.position.x][this.position.y] === 1){
 			this.environment.end = true;
 		}else {
+			if (this.handicap > 0) {
+				this.handicap--;
+				this.environment.change = true;
+				return;
+			} else {
+				this.handicap = chaserHandicap	
+			}	
 			if (this.environment.roundCountWithSuperPowerRemaining > 0) {
 				this.color = this.environment.roundCountWithSuperPowerRemaining%2 == 0 ? 'red' : 'black';
 				if (Math.random() > this.cleverness) {
@@ -76,7 +86,7 @@ var ChaserModel = function(chaserOptions) {
 			}
 			else if (a instanceof SuperPower) {
 				this.environment.removeAgent(a);
-				this.environment.roundCountWithSuperPowerRemaining = 50;
+				this.environment.roundCountWithSuperPowerRemaining = superPowerRunCount;
 				this.environment.moveAgent(this, nextPos.x, nextPos.y);
 				this.environment.computeDijkstraNumbering(this.position);
 			}
