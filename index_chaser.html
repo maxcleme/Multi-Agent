@@ -522,7 +522,6 @@ function setPressedDirections(e) {
   if ( !environment )
     return;
   e = e || window.event;
-  e.preventDefault();
 
   if (keyDowns.indexOf(e.keyCode) < 0 && e.keyCode !== 32) {
     keyDowns.push(e.keyCode);
@@ -535,6 +534,7 @@ function setPressedDirections(e) {
         x: -1,
         y: 0
       }
+	  e.preventDefault();
       break;
     case 38:
       // UP
@@ -542,6 +542,7 @@ function setPressedDirections(e) {
         x: 0,
         y: -1
       }
+	  e.preventDefault();
       break;
     case 39:
       // RIGHT
@@ -549,6 +550,7 @@ function setPressedDirections(e) {
         x: 1,
         y: 0
       }
+	  e.preventDefault();
       break;
     case 40:
       // DOWN
@@ -556,10 +558,12 @@ function setPressedDirections(e) {
         x: 0,
         y: 1
       }
+	  e.preventDefault();
       break;
 
     case 32:
       pause();
+	  e.preventDefault();
       break;
     }
   }
