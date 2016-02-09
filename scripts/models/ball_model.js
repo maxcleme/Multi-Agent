@@ -14,14 +14,14 @@ var BallModel = function(ballOptions) {
     ];
 	
     /** BALL **/
-    var Ball = this.ball = function() {
-        Agent.call(this, 'ball', 'red', ballOptions.shape);
+    var Ball = this.ball = function(env) {
+        Agent.call(this, 'ball', 'red', env, ballOptions.shape);
         this.direction = directions[Math.floor(Math.random() * directions.length)];
     };
 
 
 	Ball.prototype.nextPosition = function() {
-		return that.environment.getPosition(this.position.x + this.direction[0], this.position.y + this.direction[1]);
+		return this.environment.getPosition(this.position.x + this.direction[0], this.position.y + this.direction[1]);
 	}
 		
     Ball.prototype.doIt = function() {
@@ -46,12 +46,12 @@ var BallModel = function(ballOptions) {
         }
 
         if (nextP !== undefined) {
-            var cell = that.environment.getAgent(nextP.x, nextP.y);
+            var cell = this.environment.getAgent(nextP.x, nextP.y);
             if (cell !== undefined && cell instanceof Ball) {
             	this.direction = [this.direction[0] * (-1), this.direction[1] * (-1)];
             	cell.direction = [cell.direction[0] * (-1), cell.direction[1] * (-1)];
             } else {
-                that.environment.moveAgent(this, nextP.x, nextP.y);
+                this.environment.moveAgent(this, nextP.x, nextP.y);
             }
         }
     };
@@ -69,5 +69,4 @@ var BallModel = function(ballOptions) {
 
         this.callback = function() {};
     };
-
 };

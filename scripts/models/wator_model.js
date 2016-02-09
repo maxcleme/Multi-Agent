@@ -13,13 +13,12 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 
 	var that = this;
 
-	var Fish = this.fish = function() {
-		Agent.call(this, 'fish', 'DodgerBlue');
+	var Fish = this.fish = function(env) {
+		Agent.call(this, 'fish', 'DodgerBlue', env);
 	};
-	var Shark = this.shark = function() {
-		Agent.call(this, 'shark', 'LightCoral');
+	var Shark = this.shark = function(env) {
+		Agent.call(this, 'shark', 'LightCoral', env);
 	};
-
 
 	Fish.prototype.age = 0;
 
@@ -30,21 +29,19 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 
 	Fish.prototype.doIt = function() {
 		this.age++;
-
-
 		shuffleArray(directions);
 		for ( i = 0 ; i < directions.length ; i++ ){
-			var nextPos = that.environment.getPosition(this.position.x + directions[i][0], this.position.y + directions[i][1]);
+			var nextPos = this.environment.getPosition(this.position.x + directions[i][0], this.position.y + directions[i][1]);
 			if ( nextPos === undefined )
 				continue // In case of non-toric world
-			var cell = that.environment.getAgent(nextPos.x, nextPos.y);
+			var cell = this.environment.getAgent(nextPos.x, nextPos.y);
 			if (cell === undefined) {
 				old_x = this.position.x;
 				old_y = this.position.y;
-				that.environment.moveAgent(this, nextPos.x, nextPos.y);
+				this.environment.moveAgent(this, nextPos.x, nextPos.y);
 				if (this.age % fishesOptions.breedCount === 0) {
-					//randomPos = that.environment.randomFree(this);
-					that.environment.addAgent(new Fish(), old_x, old_y);
+					//randomPos = this.environment.randomFree(this);
+					this.environment.addAgent(new Fish(this.environment), old_x, old_y);
 				}
 				return;
 			}
@@ -57,7 +54,7 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 		this.lastFishCount++;
 
 		if (this.lastFishCount === sharksOptions.minimumEatCount) {
-			that.environment.removeAgent(this);
+			this.environment.removeAgent(this);
 			return;
 		}
 
@@ -68,18 +65,18 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 		var old_y;
 		shuffleArray(directions);
 		for ( i = 0 ; i < directions.length ; i++ ){
-			nextPos = that.environment.getPosition(this.position.x + directions[i][0], this.position.y + directions[i][1]);
+			nextPos = this.environment.getPosition(this.position.x + directions[i][0], this.position.y + directions[i][1]);
 			if ( nextPos === undefined )
 				continue // In case of non-toric world
-			cell = that.environment.getAgent(nextPos.x, nextPos.y);
+			cell = this.environment.getAgent(nextPos.x, nextPos.y);
 			if (cell instanceof Fish) {
-				that.environment.removeAgent(cell);
+				this.environment.removeAgent(cell);
 				this.lastFishCount = 0;
 				old_x = this.position.x ;
 				old_y = this.position.y ;
-				that.environment.moveAgent(this, nextPos.x, nextPos.y);
+				this.environment.moveAgent(this, nextPos.x, nextPos.y);
 				if (this.age % sharksOptions.breedCount === 0) {
-					that.environment.addAgent(new Shark(), old_x, old_y	);
+					this.environment.addAgent(new Shark(this.environment), old_x, old_y	);
 				}
 				return;
 			}
@@ -90,9 +87,9 @@ var WatorModel = function(fishesOptions, sharksOptions) {
 		if ( firstEmptyPos && nextPos){
 			old_x = this.position.x ;
 			old_y = this.position.y ;
-			that.environment.moveAgent(this, nextPos.x, nextPos.y);
+			this.environment.moveAgent(this, nextPos.x, nextPos.y);
 			if (this.age % sharksOptions.breedCount === 0) {
-				that.environment.addAgent(new Shark(), old_x, old_y	);
+				this.environment.addAgent(new Shark(this.environment), old_x, old_y	);
 			}
 		}
 

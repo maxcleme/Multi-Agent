@@ -33,7 +33,7 @@ var Environment = function (options) {
 		Math.seedrandom(this.options.fairnessSeed);
 	}
     if (this.renderer) {
-        this.renderer.init();
+        this.renderer.init(that);
     }
 
     // Initialize the positions/population array.
@@ -66,14 +66,20 @@ var Environment = function (options) {
       var randomCol = Math.floor((Math.random() * this.options.width));
 
       if (this.population[randomRow][randomCol] == undefined) {
-
+		var colors = undefined;
         // Get the agent to create
         var Agent = actors[0].type;
+		if (actors[0].randomColors && colors == undefined) {
+			colors = generateColors(actors[0].count);
+		}
 
         // Create new instance of the agent
-        var newAgent = new Agent(randomRow, randomCol);
+        var newAgent = new Agent(that);
         var position = this.positions[randomRow][randomCol];
         newAgent.position = position;
+		if (colors) {
+			newAgent.color = colors[actors[0].count - 1];
+		}
 
         // Update free places
         this.freePlaces.splice(this.freePlaces.indexOf(position), 1);
@@ -88,6 +94,7 @@ var Environment = function (options) {
         // Delete the actor of the array if processed
         if (actors[0].count == 0) {
           actors.shift();
+		  colors = undefined;
         }
 
       }
@@ -201,7 +208,7 @@ var Environment = function (options) {
       }
 
       if (this.renderer) {
-        this.renderer.setColor(agent);
+        this.renderer.drawAgent(agent);
       }
     });
 
@@ -299,7 +306,7 @@ var Environment = function (options) {
   /**
    * Compute the Dijkstra grid from a position to an other.
    */
-  this.setDijkstraNumbering = function (positions, n) {
+  this.computeDijkstraNumbering = function (positions, n) {
 
     var height = this.options.height;
     var width = this.options.width;
@@ -332,7 +339,7 @@ var Environment = function (options) {
 
     });
 
-    if (browsedPositions.length > 0) this.setDijkstraNumbering(browsedPositions, number + 1);
+    if (browsedPositions.length > 0) this.computeDijkstraNumbering(browsedPositions, number + 1);
 
 
 
@@ -532,9 +539,10 @@ var Environment = function (options) {
 
 };
 
-var Agent = function (type, color, shape) {
+var Agent = function (type, color, env, shape) {
   this.type = type;
   this.color = color;
+  this.environment = env;
   this.shape = shape || 'SQUARE';
 };
 Agent.prototype.doIt = function () {
@@ -549,3 +557,15 @@ function shuffleArray(o) {
   for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 };
+
+function randomVal(min, max) {
+	return Math.floor(Math.random() * (max - min) + 1) + min;
+}
+function generateColors(nb) {
+	var colors = [];
+  for (var i = 0; i < nb; i++) {
+	var hsl = 'hsl(' + randomVal(0, 360) + ', ' + randomVal(30, 95) + '%,  ' + randomVal(30, 80) + '%)';
+	colors.push(hsl);
+  }
+  return colors;
+}

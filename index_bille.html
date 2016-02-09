@@ -322,15 +322,12 @@
 				renderer : renderer,
 				actors : [ {
 					type : ballModel.ball,
-					count : formValue.quantity
+					count : formValue.quantity,
+					randomColors : true
 				} ]
 			};
 			console.log(environmentOptions);
 			environment = new Environment(environmentOptions);
-
-			/** SET ENVIRONMENT TO WATOR MODEL AND RENDERER **/
-			ballModel.environment = environment;
-			renderer.environment = environment;
 
 			/** START ENVIRONMENT **/
 			environment.init();

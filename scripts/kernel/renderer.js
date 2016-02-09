@@ -11,8 +11,8 @@ var Renderer = function(scale) {
 	this.heightScaled = undefined;
 
 
-	this.init = function() {
-
+	this.init = function(environment) {
+		this.environment = environment;
 		if (!this.scale) {
 			var scaleHeight = (window.innerHeight / 2)
 					/ this.environment.options.height;
@@ -49,7 +49,7 @@ var Renderer = function(scale) {
 	 * Set the color of the agent to its positions
 	 * @param agent the agent color.
 	 */
-	this.setColor = function(agent) {
+	this.drawAgent = function(agent) {
 		this.context.fillStyle = agent.color;
 
 		switch (agent.shape) {
@@ -60,7 +60,7 @@ var Renderer = function(scale) {
 
 			this.context.beginPath();
 			this.context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-			this.context.fillStyle = 'green';
+			this.context.fillStyle = agent.color;
 			this.context.fill();
 			this.context.lineWidth = 1;
 			this.context.strokeStyle = '#003300';
